@@ -15,3 +15,8 @@ coverage/
 data/
 *.log
 .DS_Store
+
+# graphify: local and regenerable. Rebuild with /graphify-init, or run `graphify update .` (AST-only, free).
+# NOT committed: graph.json, the cache and the wiki run to megabytes and delta-compress poorly,
+# so committing them would grow the repo forever.
+graphify-out/
