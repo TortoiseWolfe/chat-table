@@ -557,7 +557,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     'timeout', sceneId: 'out-of-time' }`.
   - after `enterScene(ctx, 'start')`, `resolveWindow` with `fixedRng([5,5, 2,2, 2,2, 2,2, 2,2])` ->
     first event `vote`, then `scene-entered fight`; phase `combat`; `window.round 2`.
-- [ ] T039 [US1] `src/engine/apply.ts` + `src/engine/index.ts`: `apply(state, cmd, rng, pack) -> {
+- [x] T039 [US1] `src/engine/apply.ts` + `src/engine/index.ts`: `apply(state, cmd, rng, pack) -> {
   state, events }`: `structuredClone(state)` once, build a `GmCtx` (`at = cmd.at`, `emit` pushes
   onto `events`), dispatch, then `state.rng = rng.state` and `state.seq += events.length`. Also
   `reopenWindow(state, at)` (contracts/events.md "The snapshot": the open window gets `opensAt = at`,
@@ -602,12 +602,12 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   - `reopenWindow` on a scene state at 500000 -> `window.endsAt` 560000, same `round` and
     declarations.
   - the same seed and command list twice -> equal event arrays (determinism).
-- [ ] T052 [P] [US1] `src/runtime/parse.ts` per contracts/chat-commands.md "Grammar". Test
+- [x] T052 [P] [US1] `src/runtime/parse.ts` per contracts/chat-commands.md "Grammar". Test
   `tests/runtime/parse.test.ts`, one case per table row, plus: `'hello'` null, `' !JOIN Kestrel '`
   -> join `kestrel`, `'!0'` null, `'!10'` null, `'!roll'` null, `'!cp 0'` null, `'!cp two'` null,
   `'!gm kick @SomeOne'` -> target `someone`, `'!say ' + 'x'.repeat(300)` -> text length 200,
   `'!dance'` null.
-- [ ] T053 [P] [US1] `src/runtime/replies.ts` per contracts/chat-commands.md "Reply lines":
+- [x] T053 [P] [US1] `src/runtime/replies.ts` per contracts/chat-commands.md "Reply lines":
   `replyLines(events, state, pack)`, `narrationLine(e, pack)` (the template, variant `e.variant`,
   filled with `e.vars`, then each quote as ` <character>: "<text>"`), and `chatLines(events, state,
   pack): string[]`, every line in event order (a `narrate` -> `narrationLine`, any other event ->
@@ -617,7 +617,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   names `Spark Die`; `narrationLine` of `narrate { template: 'scene.start', variant: 0, vars: {
   place: 'a door' }, quotes: [] }` on the tiny pack -> `'scene.start line'`; `chatLines([seat-claimed,
   narrate, ignored])` -> two lines, the claim line first.
-- [ ] T038 [US1] the offline runner:
+- [x] T038 [US1] the offline runner:
   - `src/runtime/log.ts`: `toLogLines(events, before, at): LogLine[]` and `formatLogLine(line):
     string` per contracts/events.md "The JSONL log line" (keys in contract order).
   - `src/sim/clock.ts`: `FakeClock(start)`: `now()`, `setTimer(fn, ms)`, `clearTimer(id)`,
