@@ -11,8 +11,8 @@ turn order and the dice.
   scene change. An optional language model only words the narration, one or two sentences at a time,
   from facts the game master hands it. If the model is slow or down, the game carries on with
   pre-written lines.
-- **Rules:** the OpenD6 mechanics, released by their owners under the Open Game License 1.0a. See
-  [docs/licensing.md](docs/licensing.md) and [OGL.md](OGL.md) once it lands.
+- **Rules:** Open Game Content used under the Open Game License 1.0a; see [OGL.md](OGL.md) and
+  [docs/licensing.md](docs/licensing.md).
 - **Setting:** an original space-opera setting, *Frontier*, in `packs/frontier`. Settings are content
   packs (JSON plus art and sound); a host can load their own with `--pack <path>`. Packs built on
   someone else's licensed property stay private to the host and never enter this repo, and CI blocks

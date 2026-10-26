@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  spec:
+    name: Spec lint and content guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Markdown lint
+        run: npx --yes markdownlint-cli2@0.24.0
+      - name: Content guard
+        run: python3 -I scripts/guard.py .
+      - name: Pack schema is valid JSON
+        run: python3 -m json.tool features/core/001-chat-table-v1/contracts/pack.schema.json > /dev/null

@@ -16,6 +16,14 @@ packs and must never enter this repo or its Docker image. The content guard enfo
 - Its unit tests inject a made-up denylist (hashes of invented words) and plant a fixture at test
   time, so no real banned term is ever written into a test.
 
+## The compatibility rule
+
+OGL 1.0a Section 7 forbids claiming compatibility with a trademarked game system (see
+[licensing.md](licensing.md) section 4). The guard has a second check for it: a line that contains
+"compatible", "compatibility", "for use with" or "powered by" and also names the game system or its
+open edition (matched on normalised words, the same way as the denylist) is a hit. Only `OGL.md` and
+`docs/licensing.md` are exempt, because they must quote the licence and the Section 15 notice.
+
 ## Changing the list
 
 New hashes come from the hub, which keeps the plain list outside every repo. Never add a plain-text
