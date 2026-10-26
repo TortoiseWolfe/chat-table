@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  spec:
+  check:
     name: Spec lint and content guard
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -18,9 +18,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Markdown lint
-        run: npx --yes markdownlint-cli2@0.24.0
-      - name: Content guard
-        run: python3 -I scripts/guard.py .
-      - name: Pack schema is valid JSON
-        run: python3 -m json.tool features/core/001-chat-table-v1/contracts/pack.schema.json > /dev/null
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: python3 -I scripts/guard.py .
+      - run: python3 -m json.tool features/core/001-chat-table-v1/contracts/pack.schema.json > /dev/null

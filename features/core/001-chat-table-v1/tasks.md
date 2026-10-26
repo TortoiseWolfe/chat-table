@@ -86,7 +86,7 @@ Hand-built, five files, used by GM, seat and sim tests. Its exact content:
 
 **Purpose**: the package, the toolchain and the container. No game code.
 
-- [ ] T001 `package.json`: `"name": "chat-table"`, `"private": true`, `"type": "module"`,
+- [x] T001 `package.json`: `"name": "chat-table"`, `"private": true`, `"type": "module"`,
   `"engines": { "node": ">=22 <23" }`, `"license": "MIT"`. Exact versions from research.md R12:
   dependencies `zod@4.6.7`; devDependencies `typescript@6.0.3`, `vitest@5.0.5`,
   `fast-check@4.10.2`, `tsx@4.23.15`, `eslint@10.13.0`, `typescript-eslint@8.72.1`,
@@ -95,16 +95,16 @@ Hand-built, five files, used by GM, seat and sim tests. Its exact content:
   --outputFile=out/vitest.json && node scripts/check-no-skips.mjs out/vitest.json`, `lint` =
   `eslint . && markdownlint-cli2`, `guard` = `tsx src/guard/cli.ts .`, `sim` = `tsx src/sim/cli.ts`.
   The hub runs `npm install` once in the container to write `package-lock.json`.
-- [ ] T002 [P] `tsconfig.json`: `target ES2023`, `module NodeNext`, `moduleResolution NodeNext`,
+- [x] T002 [P] `tsconfig.json`: `target ES2023`, `module NodeNext`, `moduleResolution NodeNext`,
   `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `verbatimModuleSyntax`,
   `noEmit`, include `src`, `tests`, `*.ts`. `tsconfig.build.json` extends it with `noEmit: false`,
   `outDir dist`, `rootDir src`, include `src` only.
-- [ ] T003 [P] `vitest.config.ts`: `test.include = ['tests/**/*.test.ts']`, `environment: 'node'`,
+- [x] T003 [P] `vitest.config.ts`: `test.include = ['tests/**/*.test.ts']`, `environment: 'node'`,
   `passWithNoTests: false`, `restoreMocks: true`, `allowOnly: false` (a `.only` fails the run).
-- [ ] T004 [P] `scripts/check-no-skips.mjs`: reads the Vitest JSON report path from argv; exits 1
+- [x] T004 [P] `scripts/check-no-skips.mjs`: reads the Vitest JSON report path from argv; exits 1
   printing `skipped: N, todo: M` when `numPendingTests + numTodoTests > 0` or when any
   `testResults[].assertionResults[].status` is `skipped`, `pending` or `todo`; else exits 0.
-- [ ] T005 [P] `eslint.config.js` (flat): `typescript-eslint` recommended type-checked for `src` and
+- [x] T005 [P] `eslint.config.js` (flat): `typescript-eslint` recommended type-checked for `src` and
   `tests`; `no-restricted-imports` per plan.md "Import rules":
   for `src/engine/**` (except `src/engine/apply.ts`) forbid `../gm/*`, `../seats/*`, `../runtime/*`
   and every `node:*`; for `src/engine/apply.ts` forbid `../runtime/*` and `node:*`; for `src/gm/**`
@@ -114,9 +114,9 @@ Hand-built, five files, used by GM, seat and sim tests. Its exact content:
   between scenes, and the files flow.ts calls must not call back into it.
   Also `no-restricted-properties` for `Math.random` and `Date.now` in `src/engine/**`,
   `src/gm/**`, `src/seats/**`. Ignore `dist`, `out`, `node_modules`.
-- [ ] T006 [P] `.markdownlint-cli2.jsonc` already exists from phase 1: add `packs/**/*.md` to its
+- [x] T006 [P] `.markdownlint-cli2.jsonc` already exists from phase 1: add `packs/**/*.md` to its
   `globs` and change nothing else (`MD013`, `MD033`, `MD041` and `MD038` stay off).
-- [ ] T007 [P] `compose.yaml` (no `version:` key):
+- [x] T007 [P] `compose.yaml` (no `version:` key):
   service `app`: `image: node:22-alpine`, `working_dir: /work`, volume `.:/work` only (no named
   `node_modules` volume: Docker creates it root-owned and user 1000 cannot write it; `node_modules/`
   lives in the bind mount and is gitignored), `user: "1000:1000"`, `environment: { HOME: /tmp }`
@@ -125,7 +125,7 @@ Hand-built, five files, used by GM, seat and sim tests. Its exact content:
   `build: .`, `env_file: { path: .env, required: false }`, volumes `data:/data`,
   `ports: ["127.0.0.1:8787:8787"]`, `mem_limit: 1g`, `cpus: 1`, `restart: unless-stopped`,
   `profiles: ["run"]` (so `docker compose run app` never builds it). Volume `data`.
-- [ ] T008 [P] `Dockerfile`: stage `build` from `node:22-alpine`: `WORKDIR /app`, copy
+- [x] T008 [P] `Dockerfile`: stage `build` from `node:22-alpine`: `WORKDIR /app`, copy
   `package.json package-lock.json`, `npm ci`, copy `tsconfig*.json src`, `npm run build`. Stage
   `run` from `node:22-alpine`: `WORKDIR /app`, `ENV NODE_ENV=production DATA_DIR=/data
   PACK=/app/packs/frontier`, copy the two package files, `npm ci --omit=dev`, copy `--from=build
@@ -133,9 +133,9 @@ Hand-built, five files, used by GM, seat and sim tests. Its exact content:
   `guard/denylist.sha256`; `RUN mkdir /data && chown node:node /data`; `USER node`; `VOLUME /data`;
   `EXPOSE 8787`; `CMD ["node", "dist/main.js"]`. `.dockerignore`: `.git`, `node_modules`, `dist`,
   `out`, `packs-private`, `.env`, `tests`.
-- [ ] T009 [P] `.gitignore`: add `node_modules/`, `dist/`, `out/` (keep `.env` and
+- [x] T009 [P] `.gitignore`: add `node_modules/`, `dist/`, `out/` (keep `.env` and
   `packs-private/`).
-- [ ] T010 `.github/workflows/ci.yml`: keep the one job `spec` and its steps, renamed `check`; on
+- [x] T010 `.github/workflows/ci.yml`: keep the one job `spec` and its steps, renamed `check`; on
   `ubuntu-latest` with Node 22 (`actions/setup-node`, `cache: npm`) run `npm ci`, `npm run
   typecheck`, `npm run lint` (this replaces the phase 1 `npx markdownlint-cli2` step), `npm test`,
   then the existing `python3 -I scripts/guard.py .` and `python3 -m json.tool` steps. T060 swaps the
@@ -150,7 +150,7 @@ Hand-built, five files, used by GM, seat and sim tests. Its exact content:
 **Purpose**: dice, RNG, tables, wounds, points, initiative, the shared types and test helpers, then
 rolls and checks. Blocks everything after. Build in the order listed.
 
-- [ ] T011 [P] `src/engine/dice.ts` per data-model.md "Dice codes". Test `tests/engine/dice.test.ts`:
+- [x] T011 [P] `src/engine/dice.ts` per data-model.md "Dice codes". Test `tests/engine/dice.test.ts`:
   - `parseDiceCode('3D+2')` -> `{ dice: 3, pips: 2 }`; `'3d'` -> `{ 3, 0 }`; `'2D+4'` -> `{ 3, 1 }`;
     `'3D-1'` -> `{ 2, 2 }`; `' 4 D + 1 '` -> `{ 4, 1 }`; `'0D+2'` -> `{ 0, 2 }`.
   - throws for `''`, `'D'`, `'3'`, `'3D+'`, `'xD'`, `'0D-1'`, `'1D-4'`.
@@ -162,7 +162,7 @@ rolls and checks. Blocks everything after. Build in the order listed.
     `minusDice({1,2}, 2)` -> `{ 0, 0 }`.
   - `doubleDice({4,2})` -> `{ 8, 4 }` (not normalised).
   - fast-check: for any `dice` 0..20 and `pips` 0..2, `parseDiceCode(formatDiceCode(c))` equals `c`.
-- [ ] T012 [P] `src/engine/rng.ts` per data-model.md "Random numbers". Test `tests/engine/rng.test.ts`
+- [x] T012 [P] `src/engine/rng.ts` per data-model.md "Random numbers". Test `tests/engine/rng.test.ts`
   (pinned values, computed when this list was written):
   - `mix32(0)` -> `0`; `mix32(1)` -> `1364076727`; `mix32(0xdeadbeef)` -> `233162409`.
   - `createRng({ seed: 1, counter: 0 })`: eight `die(6)` calls -> `[2, 4, 1, 4, 3, 3, 5, 6]`, and
@@ -171,19 +171,19 @@ rolls and checks. Blocks everything after. Build in the order listed.
   - resuming: `createRng({ seed: 1, counter: 5 })` then three `die(6)` -> `[3, 5, 6]`.
   - fast-check: for any seed and counter, `die(n)` is an integer in `1..n` for `n` in 2..20.
   - distribution: 60000 `die(6)` draws from seed 7: each face count is within 10000 +- 400.
-- [ ] T013 [P] `src/engine/terms.ts`: `SPECIAL_DIE_NAME`, `SPECIAL_DIE_SHORT` exactly as in
+- [x] T013 [P] `src/engine/terms.ts`: `SPECIAL_DIE_NAME`, `SPECIAL_DIE_SHORT` exactly as in
   data-model.md, plus `specialDieName(pack: { terms?: { specialDie?: string } }): string`. Test
   `tests/engine/terms.test.ts`: no pack override -> the constant; override `'Spark Die'` -> `'Spark Die'`.
   Then a test that reads every `.ts` file under `src/` and `packs/` (with `node:fs`; tests may) and
   fails if any file other than `src/engine/terms.ts` contains the constant's value (FR-009).
-- [ ] T014 [P] `src/engine/tables.ts` per data-model.md "Tables". Test `tests/engine/tables.test.ts`:
+- [x] T014 [P] `src/engine/tables.ts` per data-model.md "Tables". Test `tests/engine/tables.test.ts`:
   `DIFFICULTY` is exactly `{ 'very-easy': 5, easy: 10, moderate: 15, difficult: 20,
   'very-difficult': 25, heroic: 30 }`; `COMBAT_MIN_DIFFICULTY` is `3`; `WOUND_ORDER` has the 7
   levels in data-model order; `WOUND_BANDS` deep-equals `[{ minMargin: 1, level: 'stunned' },
   { minMargin: 4, level: 'wounded' }, { minMargin: 9, level: 'incapacitated' }, { minMargin: 13,
   level: 'mortally-wounded' }, { minMargin: 16, level: 'dead' }]`; `WOUND_PENALTY` stunned 1,
   wounded 1, severely-wounded 2, every other level 0.
-- [ ] T017 [P] `src/engine/wounds.ts` per data-model.md and research.md R5. Test
+- [x] T017 [P] `src/engine/wounds.ts` per data-model.md and research.md R5. Test
   `tests/engine/wounds.test.ts`:
   - `woundFromMargin`: `0` null, `-3` null, `1` stunned, `3` stunned, `4` wounded, `8` wounded,
     `9` incapacitated, `12` incapacitated, `13` mortally-wounded, `15` mortally-wounded, `16` dead,
@@ -193,14 +193,14 @@ rolls and checks. Blocks everything after. Build in the order listed.
     severely-wounded; (severely-wounded, wounded) incapacitated; (wounded, incapacitated)
     incapacitated; (mortally-wounded, stunned) dead; (dead, stunned) dead.
   - `isOut`: severely-wounded false; incapacitated, mortally-wounded, dead true.
-- [ ] T018 [P] `src/engine/points.ts`. Test `tests/engine/points.test.ts`:
+- [x] T018 [P] `src/engine/points.ts`. Test `tests/engine/points.test.ts`:
   `canSpendCp({cp:5,fp:1}, 2, 2)` true; `(…, 3, 2)` false; `({cp:1,fp:1}, 2, 2)` false;
   `({cp:5,fp:1}, 0, 2)` false. `canSpendFp({cp:5,fp:1}, 0)` true; `(…, 1)` false;
   `({cp:5,fp:0}, 0)` false.
-- [ ] T019 [P] `src/engine/initiative.ts`. Test `tests/engine/initiative.test.ts`: entries
+- [x] T019 [P] `src/engine/initiative.ts`. Test `tests/engine/initiative.test.ts`: entries
   `c` (total 12, per 2D, ref 2D), `d` (10, 3D+1, 1D), `e` (10, 3D, 3D), `a` (10, 3D, 2D),
   `b` (10, 3D, 2D), given in the order b, a, e, c, d -> `['c', 'd', 'e', 'a', 'b']`.
-- [ ] T020 Types and defaults, exactly as in data-model.md and contracts/events.md:
+- [x] T020 Types and defaults, exactly as in data-model.md and contracts/events.md:
   `src/engine/state.ts` (`Seat`, `Holder`, `WaitEntry`, `ViewerRecord`, `Phase`, `Declaration`,
   `Window`, `Option`, `Settings`, `GameState`, `DEFAULT_SETTINGS`, `initialState`),
   `src/engine/pack.ts` (`Pack`, `Adventure`, `Scene`, `Choice`, `Character`, `NpcTemplate`, `Npc`,
@@ -214,7 +214,7 @@ rolls and checks. Blocks everything after. Build in the order listed.
   `npcs []`, `initiative []`, `combatRound 0`, `waitlist []`, `declarations`, `quotes`, `dodges`,
   `cooldowns` all `{}`, `viewers` as given, `rng { seed, counter: 0 }`, `seq 0`, `ending null`.
   No test file here: `npm run typecheck` is the check. Its test is in T034, once the tiny pack loads.
-- [ ] T021 [P] Test helpers `tests/helpers/fixedRng.ts` and `tests/helpers/actor.ts` exactly as
+- [x] T021 [P] Test helpers `tests/helpers/fixedRng.ts` and `tests/helpers/actor.ts` exactly as
   "Shared test helpers" above (`fixedRng`, `viewer`, `mod`, `character`). Depends on T020 types.
   Test `tests/helpers/helpers.test.ts`:
   - `fixedRng([3, 6])`: `die(6)` -> `3`, `die(6)` -> `6`, `left()` -> `0`, `state` ->
@@ -223,7 +223,7 @@ rolls and checks. Blocks everything after. Build in the order listed.
   - `viewer(3)` -> `{ userId: 'u3', login: 'viewer3', isMod: false, isBroadcaster: false }`;
     `mod(3).isMod` -> `true`.
   - `character('ben').name` -> `'Ben'`; two `character()` calls return objects that are not `===`.
-- [ ] T015 `src/engine/roll.ts` per data-model.md "Rolls" (depends on T011-T013, T021). Rules:
+- [x] T015 `src/engine/roll.ts` per data-model.md "Rolls" (depends on T011-T013, T021). Rules:
   normal dice are `code.dice - 1` faces; then the special chain (draw; while the face is 6 draw again);
   then each CP chain the same way. When `special[0] === 1`: `drop-highest` puts `1` and the highest
   normal face (if any) into `dropped` and neither counts; `complication` counts everything and sets
@@ -242,7 +242,7 @@ rolls and checks. Blocks everything after. Build in the order listed.
     faces of 1, special `[2]`, total `13` (7 + 2 + 4 pips).
   - fast-check with `createRng`: total is never below 0; `normal.length === max(0, dice - 1)`;
     every special chain ends in a face that is not 6.
-- [ ] T016 [P] `src/engine/checks.ts` per data-model.md: `check`, `opposed`, `multiActionPenalty`,
+- [x] T016 [P] `src/engine/checks.ts` per data-model.md: `check`, `opposed`, `multiActionPenalty`,
   `skillCode(character, name, attributeOf: (skill: string) => Attribute | undefined): DiceCode`
   (the character's own skill code if it has the skill, else the attribute named by `attributeOf`,
   else throws). Depends on T021. Build `RollResult`s in the test with a helper `r(total)`; build
