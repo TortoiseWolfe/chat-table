@@ -1,0 +1,12 @@
+{
+  // Spec and docs lint. Line length, inline HTML and first-line heading rules are off:
+  // specs wrap freely, and docs may use inline HTML such as <details>. MD038 is off because
+  // contracts/chat-commands.md quotes join separators with their spaces, e.g. `, `.
+  "config": {
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+    "MD038": false
+  },
+  "globs": ["README.md", "OGL.md", "docs/**/*.md", "features/**/*.md"]
+}

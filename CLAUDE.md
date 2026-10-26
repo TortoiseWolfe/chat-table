@@ -19,5 +19,6 @@ Rules for the project as a whole: `.specify/memory/constitution.md`.
   `Rng` it is given. The code GM decides; the narrator only words. Viewer text reaches the narrator
   only inside quotes.
 - **Inject dependencies.** Anything that touches the outside world (fetch, clock, timers, files,
-  sockets, randomness) comes in through a `Deps` object; only `src/main.ts` wires real ones.
+  sockets, randomness) comes in through a `Deps` object; only the two entry points, `src/main.ts` and
+  `src/sim/cli.ts`, wire real ones (tests may use `node:fs` to read fixtures).
 - **Tests:** 0 skipped. A `.skip` or `.todo` fails review.

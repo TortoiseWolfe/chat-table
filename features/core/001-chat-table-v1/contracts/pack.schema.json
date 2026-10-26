@@ -1,0 +1,686 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/TortoiseWolfe/chat-table/features/core/001-chat-table-v1/contracts/pack.schema.json",
+  "title": "chat-table pack",
+  "description": "A pack as the loader assembles it. On disk it is five files: pack.json (id, name, version, licence, terms, skills, assets), characters.json (characters), npcs.json (npcs), adventure.json (adventure) and templates.json (templates). src/packs/schema.ts is the zod copy of this shape. Cross-references (scene ids, npc ids, choice ids, template keys, asset keys, skill names) are checked by src/packs/load.ts, not by this schema.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "version",
+    "licence",
+    "skills",
+    "characters",
+    "npcs",
+    "adventure",
+    "templates",
+    "assets"
+  ],
+  "properties": {
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "licence": {
+      "type": "string",
+      "minLength": 1
+    },
+    "terms": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "specialDie": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        }
+      }
+    },
+    "skills": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "attribute"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attribute": {
+            "$ref": "#/$defs/attribute"
+          }
+        }
+      }
+    },
+    "characters": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "$ref": "#/$defs/character"
+      }
+    },
+    "npcs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/npc"
+      }
+    },
+    "adventure": {
+      "$ref": "#/$defs/adventure"
+    },
+    "templates": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    },
+    "assets": {
+      "$ref": "#/$defs/assets"
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "dice": {
+      "type": "string",
+      "pattern": "^\\s*[0-9]+\\s*[dD]\\s*([+-]\\s*[0-9]+)?\\s*$",
+      "description": "A dice code such as 3D+2, 4D or 2D-1."
+    },
+    "attribute": {
+      "enum": [
+        "reflexes",
+        "coordination",
+        "physique",
+        "knowledge",
+        "perception",
+        "presence"
+      ]
+    },
+    "difficulty": {
+      "enum": [
+        "very-easy",
+        "easy",
+        "moderate",
+        "difficult",
+        "very-difficult",
+        "heroic"
+      ]
+    },
+    "wound": {
+      "enum": [
+        "healthy",
+        "stunned",
+        "wounded",
+        "severely-wounded",
+        "incapacitated",
+        "mortally-wounded",
+        "dead"
+      ]
+    },
+    "attributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reflexes",
+        "coordination",
+        "physique",
+        "knowledge",
+        "perception",
+        "presence"
+      ],
+      "properties": {
+        "reflexes": {
+          "$ref": "#/$defs/dice"
+        },
+        "coordination": {
+          "$ref": "#/$defs/dice"
+        },
+        "physique": {
+          "$ref": "#/$defs/dice"
+        },
+        "knowledge": {
+          "$ref": "#/$defs/dice"
+        },
+        "perception": {
+          "$ref": "#/$defs/dice"
+        },
+        "presence": {
+          "$ref": "#/$defs/dice"
+        }
+      }
+    },
+    "skill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "attribute",
+        "code"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "attribute": {
+          "$ref": "#/$defs/attribute"
+        },
+        "code": {
+          "$ref": "#/$defs/dice"
+        }
+      }
+    },
+    "weapon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "skill",
+        "damage",
+        "range"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "skill": {
+          "type": "string"
+        },
+        "damage": {
+          "$ref": "#/$defs/dice"
+        },
+        "range": {
+          "$ref": "#/$defs/difficulty"
+        }
+      }
+    },
+    "points": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cp",
+        "fp"
+      ],
+      "properties": {
+        "cp": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fp": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "botScript": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prefer",
+        "combat",
+        "spendCp"
+      ],
+      "properties": {
+        "prefer": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "combat": {
+          "enum": [
+            "attack-weakest",
+            "attack-strongest",
+            "attack-first",
+            "dodge"
+          ]
+        },
+        "spendCp": {
+          "enum": [
+            "never",
+            "when-out-of-options",
+            "on-checks"
+          ]
+        }
+      }
+    },
+    "character": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "pronouns",
+        "concept",
+        "attributes",
+        "skills",
+        "weapons",
+        "armor",
+        "points",
+        "bot"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pronouns": {
+          "type": "string"
+        },
+        "concept": {
+          "type": "string"
+        },
+        "attributes": {
+          "$ref": "#/$defs/attributes"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/skill"
+          }
+        },
+        "weapons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/weapon"
+          }
+        },
+        "armor": {
+          "$ref": "#/$defs/dice"
+        },
+        "points": {
+          "$ref": "#/$defs/points"
+        },
+        "bot": {
+          "$ref": "#/$defs/botScript"
+        }
+      },
+      "description": "wound starts 'healthy', stunnedUntil null and advances {}; the loader sets them."
+    },
+    "npc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "attributes",
+        "skills",
+        "weapons",
+        "armor",
+        "outAt",
+        "tactic"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string"
+        },
+        "attributes": {
+          "$ref": "#/$defs/attributes"
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/skill"
+          }
+        },
+        "weapons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/weapon"
+          }
+        },
+        "armor": {
+          "$ref": "#/$defs/dice"
+        },
+        "outAt": {
+          "$ref": "#/$defs/wound"
+        },
+        "tactic": {
+          "enum": [
+            "attack-weakest",
+            "attack-random",
+            "attack-first"
+          ]
+        }
+      }
+    },
+    "choice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "next": {
+          "$ref": "#/$defs/id"
+        },
+        "check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "skill",
+            "difficulty",
+            "success",
+            "failure"
+          ],
+          "properties": {
+            "skill": {
+              "type": "string"
+            },
+            "difficulty": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/difficulty"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              ]
+            },
+            "success": {
+              "$ref": "#/$defs/id"
+            },
+            "failure": {
+              "$ref": "#/$defs/id"
+            }
+          }
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "next"
+          ],
+          "not": {
+            "required": [
+              "check"
+            ]
+          }
+        },
+        {
+          "required": [
+            "check"
+          ],
+          "not": {
+            "required": [
+              "next"
+            ]
+          }
+        }
+      ]
+    },
+    "combat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "npcs",
+        "win",
+        "lose"
+      ],
+      "properties": {
+        "npcs": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "npc",
+              "count"
+            ],
+            "properties": {
+              "npc": {
+                "$ref": "#/$defs/id"
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 6
+              }
+            }
+          }
+        },
+        "win": {
+          "$ref": "#/$defs/id"
+        },
+        "lose": {
+          "$ref": "#/$defs/id"
+        },
+        "flee": {
+          "description": "scene id the party reaches when most standing seats pick flee; no flee option when absent",
+          "$ref": "#/$defs/id"
+        }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "template",
+        "facts"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "template": {
+          "type": "string"
+        },
+        "facts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "map": {
+          "type": "string"
+        },
+        "choices": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 9,
+          "items": {
+            "$ref": "#/$defs/choice"
+          }
+        },
+        "default": {
+          "$ref": "#/$defs/id"
+        },
+        "combat": {
+          "$ref": "#/$defs/combat"
+        },
+        "ending": {
+          "enum": [
+            "victory",
+            "defeat",
+            "timeout"
+          ]
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "choices",
+            "default"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "combat"
+                ]
+              },
+              {
+                "required": [
+                  "ending"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "combat"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "choices"
+                ]
+              },
+              {
+                "required": [
+                  "ending"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "required": [
+            "ending"
+          ],
+          "not": {
+            "anyOf": [
+              {
+                "required": [
+                  "choices"
+                ]
+              },
+              {
+                "required": [
+                  "combat"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "adventure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "start",
+        "roundLimit",
+        "rewards",
+        "scenes"
+      ],
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/id"
+        },
+        "roundLimit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "rewards": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "victory",
+            "defeat",
+            "timeout"
+          ],
+          "properties": {
+            "victory": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "defeat": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "timeout": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "scenes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/scene"
+          }
+        }
+      }
+    },
+    "assets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "map",
+        "art",
+        "sounds"
+      ],
+      "properties": {
+        "map": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[^/.][^:]*$"
+          }
+        },
+        "art": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[^/.][^:]*$"
+          }
+        },
+        "sounds": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "pattern": "^[^/.][^:]*$"
+          }
+        }
+      }
+    }
+  }
+}
