@@ -272,7 +272,7 @@ once the Frontier pack exists, T061.
 function takes a `GmCtx` (data-model.md "The GM's working context"), changes `ctx.s` in place and
 emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `uid` for an NPC.
 
-- [ ] T040 [P] [US1] `src/runtime/deps.ts`: `FsLike` = `{ readFile(path): Promise<string>;
+- [x] T040 [P] [US1] `src/runtime/deps.ts`: `FsLike` = `{ readFile(path): Promise<string>;
   writeFile(path, data, mode?: number): Promise<void>; appendFile(path, data): Promise<void>;
   rename(from, to): Promise<void>; fsync(path): Promise<void>; exists(path): Promise<boolean>;
   mkdir(path): Promise<void> }` (`mode` lets the token file be written `0o600`). `Deps` = `{ now():
@@ -287,7 +287,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `parseEnv({}, 'twitch')` throws an error naming `TWITCH_CLIENT_ID`; `DECLARE_SECONDS: '30'` ->
   `declareMs 30000`; `DECLARE_SECONDS: 'x'` throws naming `DECLARE_SECONDS`; `SPECIAL_ONE: 'bogus'`
   throws naming the three allowed values.
-- [ ] T022 [P] [US1] `tests/helpers/memfs.ts` and `tests/helpers/ctx.ts` exactly as "Shared test
+- [x] T022 [P] [US1] `tests/helpers/memfs.ts` and `tests/helpers/ctx.ts` exactly as "Shared test
   helpers" above. `memFs()` paths are plain strings (no normalising); `readFile` of a missing path
   rejects with an error whose `code` is `'ENOENT'`; `writeFile(p, d, mode)` stores `mode` in `modes`
   (default `0o644`). Test `tests/helpers/memfs.test.ts`: write then read returns the text;
@@ -295,19 +295,19 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `false`; `writeFile('t', 'x', 0o600)` -> `modes.get('t') === 0o600`; a missing read rejects with
   `code 'ENOENT'`; `ctxFor(s, pack, rng, 5)`: `ctx.at === 5` and `ctx.emit(e)` pushes `e` onto
   `ctx.events`.
-- [ ] T031 [P] [US1] `src/gm/keys.ts`: `GM_TEMPLATE_KEYS = ['combat.start', 'check.success',
+- [x] T031 [P] [US1] `src/gm/keys.ts`: `GM_TEMPLATE_KEYS = ['combat.start', 'check.success',
   'check.failure', 'check.complication', 'wound.stunned', 'wound.wounded', 'wound.severely-wounded',
   'wound.incapacitated', 'wound.mortally-wounded', 'wound.dead'] as const`. There are no
   `ending.*` keys: an ending scene, like every scene, narrates its own `template` with its `facts`
   when it is entered (T045). Test `tests/gm/keys.test.ts`: 10 keys, no duplicates, none starts with
   `ending.`, and every `WOUND_ORDER` level except `healthy` has a `wound.<level>` key.
-- [ ] T030 [US1] `src/packs/schema.ts`: the zod version of contracts/pack.schema.json (dice codes as
+- [x] T030 [US1] `src/packs/schema.ts`: the zod version of contracts/pack.schema.json (dice codes as
   strings) and `PackFiles` = the five files' shapes. Also write the fixture files
   `tests/fixtures/packs/tiny/{pack,characters,npcs,adventure,templates}.json` exactly as "The tiny
   fixture pack" above. Test `tests/packs/schema.test.ts` (reads the fixture with `node:fs`): the
   tiny pack's five files parse; a character with `attributes.reflexes: "3X"` fails; a scene with
   both `choices` and `ending` fails; 3 characters fails; a skill entry with no `attribute` fails.
-- [ ] T033 [US1] `src/packs/load.ts`: `packFromFiles(files: Record<string, string>, assetExists:
+- [x] T033 [US1] `src/packs/load.ts`: `packFromFiles(files: Record<string, string>, assetExists:
   (rel: string) => boolean): Pack` (pure: parses the five JSON texts keyed by file name, zod-checks
   them, turns dice strings into `DiceCode`, sets `wound 'healthy'`, `stunnedUntil null`, `advances
   {}`, and checks the cross-references in data-model.md "Pack": scene ids, `default` is a choice id,
@@ -323,13 +323,13 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `loadPack('/p', fs)`: a `next: "nowhere"` fails with a message containing `adventure.json`; a
   missing `check.success` template fails with `templates.json`; removing the `out-of-time` scene
   fails with `exactly one timeout ending`; two problems at once give a message with two lines.
-- [ ] T034 [US1] `tests/helpers/tinyPack.ts` as "Shared test helpers" above, and the state test from
+- [x] T034 [US1] `tests/helpers/tinyPack.ts` as "Shared test helpers" above, and the state test from
   T020. Test `tests/engine/state.test.ts`: `initialState(tinyPack(), 1, DEFAULT_SETTINGS)` has 4
   seats, all `holder { kind: 'bot' }`, seat 0 character `ana`, phase `idle`, `rng { seed: 1,
   counter: 0 }`; `JSON.parse(JSON.stringify(s))` deep-equals `s` (state is plain JSON); changing
   `s.seats[0].character.points.cp` leaves `tinyPack().characters[0].points.cp` at 5; the
   `viewers` argument is stored as given; two `tinyPack()` calls are not `===`.
-- [ ] T032 [US1] `src/gm/scene.ts`: `fillTemplate(text, vars)` replaces each `{name}` with
+- [x] T032 [US1] `src/gm/scene.ts`: `fillTemplate(text, vars)` replaces each `{name}` with
   `vars.name` and leaves an unknown `{x}` as is; `sceneById(pack, id)` throws
   `Error('unknown scene: <id>')`; `choiceOptions(scene): Option[]` numbers the scene's choices from 1
   (`{ n, id: choice.id, label: choice.label }`); `narrate(ctx, key, vars)`: `variant = 0` when
