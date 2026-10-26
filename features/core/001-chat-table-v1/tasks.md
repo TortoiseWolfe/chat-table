@@ -346,7 +346,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     `{ type: 'narrate', template: 'scene.start', variant: 0, vars: { place: 'a door' }, quotes:
     [{ character: 'Ana', text: 'hi' }] }`; `s.quotes` is then `{}`; no RNG face used.
   - with `pack.templates['scene.start'] = ['a', 'b']` and `fixedRng([2])` -> `variant 1`.
-- [ ] T044 [US1] `src/seats/bot.ts`: `botDeclaration(s: GameState, seatIndex: number, pack: Pack):
+- [x] T044 [US1] `src/seats/bot.ts`: `botDeclaration(s: GameState, seatIndex: number, pack: Pack):
   Declaration` for `s.window.options`. The seat's `character.bot` decides:
   - scene window: the first id in `bot.prefer` that is among the options, else the scene's
     `default` choice; `cp: 1` only when `spendCp === 'on-checks'`, that choice has a `check` and
@@ -366,7 +366,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     `attack-weakest` -> 2, `attack-strongest` -> 1, `dodge` -> 3; `grunt#1` `incapacitated` and
     `attack-first` -> 2.
   - combat cp: `when-out-of-options` and seat `wounded` -> `cp: 1`; seat `stunned` -> `cp: 0`.
-- [ ] T046 [US1] `src/seats/viewers.ts`: `recordFor(s, userId, characterId): { points: Points;
+- [x] T046 [US1] `src/seats/viewers.ts`: `recordFor(s, userId, characterId): { points: Points;
   advances: Record<string, string> } | null`; `saveSeat(s, seatIndex)`: when the seat is held by a
   viewer, writes `s.viewers[userId].characters[character.id] = { points: { ...points }, advances:
   { ...advances } }` (creating the records), else does nothing; `resetSeatCharacter(s, seatIndex,
@@ -376,7 +376,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `cp 7` -> `saveSeat` -> `s.viewers.u1.characters.ana.points` = `{ cp: 7, fp: 1 }`; `saveSeat` on a
   bot seat leaves `s.viewers` `{}`; seat 0 `cp 2`, `wound 'wounded'` -> `resetSeatCharacter` ->
   `cp 5`, wound still `wounded`.
-- [ ] T050 [US1] `src/seats/seats.ts`: `seatOf(s, userId): Seat | undefined`;
+- [x] T050 [US1] `src/seats/seats.ts`: `seatOf(s, userId): Seat | undefined`;
   `freeCharacters(s): string[]` (names of bot-held seats' characters, seat order);
   `claimSeat(ctx, actor, seatIndex)`: holder `{ kind: 'viewer', userId, login, activeFromRound }`
   with `activeFromRound = s.round + 1` when `s.window` is open, else `s.round`; `missed 0`; the
@@ -399,7 +399,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   - waitlist `[{ userId: 'u5', login: 'viewer5', character: 'ana' }]`, release seat 0 -> events
     `seat-released`, `unwaitlisted { userId: 'u5' }`, `seat-claimed { seat: 0, userId: 'u5' }`;
     waitlist empty.
-- [ ] T035 [US1] `src/gm/round.ts`:
+- [x] T035 [US1] `src/gm/round.ts`:
   - `effectiveCode(char: Character | Npc, skill, pack, actions: number, fp: boolean): DiceCode` =
     `skillCode` (attribute from `pack.skills`), doubled with `doubleDice` when `fp` (before any
     penalty), then `minusDice(code, WOUND_PENALTY[wound] + multiActionPenalty(actions))`.
@@ -451,7 +451,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   - missed: seat 0 held by active `u1` with no declaration, seats 1-3 bots on `go` -> `missed { seat:
     0, userId: 'u1', login: 'viewer1', count: 1 }`, `vote { tally: { 1: 4 } }`; the same with
     `missed` already 1 -> `missed { count: 2 }`, `seat-released { reason: 'missed' }`, then `vote`.
-- [ ] T036 [US1] `src/gm/combat.ts`:
+- [x] T036 [US1] `src/gm/combat.ts`:
   - `npcOut(npc)`: `WOUND_ORDER` index of `wound` >= index of `outAt`. `whoName(s, who)`: a seat's
     character name, or an NPC's `<name> <n>` (`grunt#1` -> `Grunt 1`).
   - `spawnNpcs(ctx, scene)`: for each `{ npc, count }` in order, NPCs with `uid` `<id>#<k>` (k from
@@ -524,7 +524,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     both miss, then `wound { target: 'seat:0', from: 'stunned', to: 'healthy' }`.
   - flee: three of four seats pick `flee` -> returns `'start'` with no `roll` events
     (`fixedRng([])`).
-- [ ] T037 [US1] `src/gm/endings.ts`: `enterEnding(ctx, scene)`: `s.ending = scene.ending`; emit
+- [x] T037 [US1] `src/gm/endings.ts`: `enterEnding(ctx, scene)`: `s.ending = scene.ending`; emit
   `ended { ending, sceneId }`; for each seat held by a viewer: `points.cp +=
   adventure.rewards[ending]`, `saveSeat`, emit `rewards { userId, login, cp }`; every seat's `wound
   'healthy'` and `stunnedUntil null`; `npcs []`; `window null`; phase `ended`. Test
@@ -532,7 +532,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   events `ended { ending: 'victory', sceneId: 'win' }`, `rewards { userId: 'u1', login: 'viewer1',
   cp: 2 }` (one `rewards`: bot seats get none); `s.viewers.u1.characters.ana.points.cp === 5`; seat
   1 `healthy`; phase `ended`.
-- [ ] T045 [US1] `src/gm/flow.ts`, the only module that moves between scenes:
+- [x] T045 [US1] `src/gm/flow.ts`, the only module that moves between scenes:
   - `enterScene(ctx, id)`: `sceneById`; `s.sceneId = id`; `npcs []`, `initiative []`, `dodges {}`,
     `combatRound 0`, `window null`, `declarations {}`; emit `scene-entered { sceneId }`;
     `narrate(ctx, scene.template, scene.facts)`. An `ending` scene: `enterEnding`, stop. A `combat`
