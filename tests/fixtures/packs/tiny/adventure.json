@@ -1,0 +1,70 @@
+{
+  "start": "start",
+  "roundLimit": 6,
+  "rewards": {
+    "victory": 2,
+    "defeat": 1,
+    "timeout": 0
+  },
+  "scenes": [
+    {
+      "id": "start",
+      "template": "scene.start",
+      "facts": {
+        "place": "a door"
+      },
+      "choices": [
+        {
+          "id": "go",
+          "label": "Walk in",
+          "next": "fight"
+        },
+        {
+          "id": "sneak",
+          "label": "Sneak past",
+          "check": {
+            "skill": "sneak",
+            "difficulty": "easy",
+            "success": "win",
+            "failure": "fight"
+          }
+        }
+      ],
+      "default": "go"
+    },
+    {
+      "id": "fight",
+      "template": "scene.fight",
+      "facts": {},
+      "combat": {
+        "npcs": [
+          {
+            "npc": "grunt",
+            "count": 1
+          }
+        ],
+        "win": "win",
+        "lose": "lose",
+        "flee": "start"
+      }
+    },
+    {
+      "id": "win",
+      "template": "scene.win",
+      "facts": {},
+      "ending": "victory"
+    },
+    {
+      "id": "lose",
+      "template": "scene.lose",
+      "facts": {},
+      "ending": "defeat"
+    },
+    {
+      "id": "out-of-time",
+      "template": "scene.timeout",
+      "facts": {},
+      "ending": "timeout"
+    }
+  ]
+}

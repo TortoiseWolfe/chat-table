@@ -1,0 +1,21 @@
+{
+  "id": "tiny",
+  "name": "Tiny",
+  "version": "0.0.1",
+  "licence": "MIT",
+  "skills": [
+    {
+      "name": "marksmanship",
+      "attribute": "coordination"
+    },
+    {
+      "name": "dodge",
+      "attribute": "reflexes"
+    },
+    {
+      "name": "sneak",
+      "attribute": "perception"
+    }
+  ],
+  "assets": {}
+}

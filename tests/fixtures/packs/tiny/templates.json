@@ -1,0 +1,47 @@
+{
+  "scene.start": [
+    "scene.start line"
+  ],
+  "scene.fight": [
+    "scene.fight line"
+  ],
+  "scene.win": [
+    "scene.win line"
+  ],
+  "scene.lose": [
+    "scene.lose line"
+  ],
+  "scene.timeout": [
+    "scene.timeout line"
+  ],
+  "combat.start": [
+    "combat.start line"
+  ],
+  "check.success": [
+    "check.success line"
+  ],
+  "check.failure": [
+    "check.failure line"
+  ],
+  "check.complication": [
+    "check.complication line"
+  ],
+  "wound.stunned": [
+    "wound.stunned line"
+  ],
+  "wound.wounded": [
+    "wound.wounded line"
+  ],
+  "wound.severely-wounded": [
+    "wound.severely-wounded line"
+  ],
+  "wound.incapacitated": [
+    "wound.incapacitated line"
+  ],
+  "wound.mortally-wounded": [
+    "wound.mortally-wounded line"
+  ],
+  "wound.dead": [
+    "wound.dead line"
+  ]
+}

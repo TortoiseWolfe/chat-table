@@ -1,0 +1,195 @@
+[
+  {
+    "id": "ana",
+    "name": "Ana",
+    "pronouns": "they/them",
+    "concept": "tester",
+    "attributes": {
+      "reflexes": "2D",
+      "coordination": "2D",
+      "physique": "2D",
+      "knowledge": "2D",
+      "perception": "2D",
+      "presence": "2D"
+    },
+    "skills": [
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "3D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "3D"
+      },
+      {
+        "name": "sneak",
+        "attribute": "perception",
+        "code": "4D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pistol",
+        "name": "Pistol",
+        "skill": "marksmanship",
+        "damage": "3D",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "go"
+      ],
+      "combat": "attack-first",
+      "spendCp": "never"
+    }
+  },
+  {
+    "id": "ben",
+    "name": "Ben",
+    "pronouns": "they/them",
+    "concept": "tester",
+    "attributes": {
+      "reflexes": "2D",
+      "coordination": "2D",
+      "physique": "2D",
+      "knowledge": "2D",
+      "perception": "2D",
+      "presence": "2D"
+    },
+    "skills": [
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "3D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "3D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pistol",
+        "name": "Pistol",
+        "skill": "marksmanship",
+        "damage": "3D",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "go"
+      ],
+      "combat": "attack-first",
+      "spendCp": "never"
+    }
+  },
+  {
+    "id": "cy",
+    "name": "Cy",
+    "pronouns": "they/them",
+    "concept": "tester",
+    "attributes": {
+      "reflexes": "2D",
+      "coordination": "2D",
+      "physique": "2D",
+      "knowledge": "2D",
+      "perception": "2D",
+      "presence": "2D"
+    },
+    "skills": [
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "3D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "3D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pistol",
+        "name": "Pistol",
+        "skill": "marksmanship",
+        "damage": "3D",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "go"
+      ],
+      "combat": "attack-first",
+      "spendCp": "never"
+    }
+  },
+  {
+    "id": "dee",
+    "name": "Dee",
+    "pronouns": "they/them",
+    "concept": "tester",
+    "attributes": {
+      "reflexes": "2D",
+      "coordination": "2D",
+      "physique": "2D",
+      "knowledge": "2D",
+      "perception": "2D",
+      "presence": "2D"
+    },
+    "skills": [
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "3D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "3D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pistol",
+        "name": "Pistol",
+        "skill": "marksmanship",
+        "damage": "3D",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "go"
+      ],
+      "combat": "attack-first",
+      "spendCp": "never"
+    }
+  }
+]

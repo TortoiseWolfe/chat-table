@@ -272,7 +272,7 @@ once the Frontier pack exists, T061.
 function takes a `GmCtx` (data-model.md "The GM's working context"), changes `ctx.s` in place and
 emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `uid` for an NPC.
 
-- [ ] T040 [P] [US1] `src/runtime/deps.ts`: `FsLike` = `{ readFile(path): Promise<string>;
+- [x] T040 [P] [US1] `src/runtime/deps.ts`: `FsLike` = `{ readFile(path): Promise<string>;
   writeFile(path, data, mode?: number): Promise<void>; appendFile(path, data): Promise<void>;
   rename(from, to): Promise<void>; fsync(path): Promise<void>; exists(path): Promise<boolean>;
   mkdir(path): Promise<void> }` (`mode` lets the token file be written `0o600`). `Deps` = `{ now():
@@ -287,7 +287,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `parseEnv({}, 'twitch')` throws an error naming `TWITCH_CLIENT_ID`; `DECLARE_SECONDS: '30'` ->
   `declareMs 30000`; `DECLARE_SECONDS: 'x'` throws naming `DECLARE_SECONDS`; `SPECIAL_ONE: 'bogus'`
   throws naming the three allowed values.
-- [ ] T022 [P] [US1] `tests/helpers/memfs.ts` and `tests/helpers/ctx.ts` exactly as "Shared test
+- [x] T022 [P] [US1] `tests/helpers/memfs.ts` and `tests/helpers/ctx.ts` exactly as "Shared test
   helpers" above. `memFs()` paths are plain strings (no normalising); `readFile` of a missing path
   rejects with an error whose `code` is `'ENOENT'`; `writeFile(p, d, mode)` stores `mode` in `modes`
   (default `0o644`). Test `tests/helpers/memfs.test.ts`: write then read returns the text;
@@ -295,19 +295,19 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `false`; `writeFile('t', 'x', 0o600)` -> `modes.get('t') === 0o600`; a missing read rejects with
   `code 'ENOENT'`; `ctxFor(s, pack, rng, 5)`: `ctx.at === 5` and `ctx.emit(e)` pushes `e` onto
   `ctx.events`.
-- [ ] T031 [P] [US1] `src/gm/keys.ts`: `GM_TEMPLATE_KEYS = ['combat.start', 'check.success',
+- [x] T031 [P] [US1] `src/gm/keys.ts`: `GM_TEMPLATE_KEYS = ['combat.start', 'check.success',
   'check.failure', 'check.complication', 'wound.stunned', 'wound.wounded', 'wound.severely-wounded',
   'wound.incapacitated', 'wound.mortally-wounded', 'wound.dead'] as const`. There are no
   `ending.*` keys: an ending scene, like every scene, narrates its own `template` with its `facts`
   when it is entered (T045). Test `tests/gm/keys.test.ts`: 10 keys, no duplicates, none starts with
   `ending.`, and every `WOUND_ORDER` level except `healthy` has a `wound.<level>` key.
-- [ ] T030 [US1] `src/packs/schema.ts`: the zod version of contracts/pack.schema.json (dice codes as
+- [x] T030 [US1] `src/packs/schema.ts`: the zod version of contracts/pack.schema.json (dice codes as
   strings) and `PackFiles` = the five files' shapes. Also write the fixture files
   `tests/fixtures/packs/tiny/{pack,characters,npcs,adventure,templates}.json` exactly as "The tiny
   fixture pack" above. Test `tests/packs/schema.test.ts` (reads the fixture with `node:fs`): the
   tiny pack's five files parse; a character with `attributes.reflexes: "3X"` fails; a scene with
   both `choices` and `ending` fails; 3 characters fails; a skill entry with no `attribute` fails.
-- [ ] T033 [US1] `src/packs/load.ts`: `packFromFiles(files: Record<string, string>, assetExists:
+- [x] T033 [US1] `src/packs/load.ts`: `packFromFiles(files: Record<string, string>, assetExists:
   (rel: string) => boolean): Pack` (pure: parses the five JSON texts keyed by file name, zod-checks
   them, turns dice strings into `DiceCode`, sets `wound 'healthy'`, `stunnedUntil null`, `advances
   {}`, and checks the cross-references in data-model.md "Pack": scene ids, `default` is a choice id,
@@ -323,13 +323,13 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `loadPack('/p', fs)`: a `next: "nowhere"` fails with a message containing `adventure.json`; a
   missing `check.success` template fails with `templates.json`; removing the `out-of-time` scene
   fails with `exactly one timeout ending`; two problems at once give a message with two lines.
-- [ ] T034 [US1] `tests/helpers/tinyPack.ts` as "Shared test helpers" above, and the state test from
+- [x] T034 [US1] `tests/helpers/tinyPack.ts` as "Shared test helpers" above, and the state test from
   T020. Test `tests/engine/state.test.ts`: `initialState(tinyPack(), 1, DEFAULT_SETTINGS)` has 4
   seats, all `holder { kind: 'bot' }`, seat 0 character `ana`, phase `idle`, `rng { seed: 1,
   counter: 0 }`; `JSON.parse(JSON.stringify(s))` deep-equals `s` (state is plain JSON); changing
   `s.seats[0].character.points.cp` leaves `tinyPack().characters[0].points.cp` at 5; the
   `viewers` argument is stored as given; two `tinyPack()` calls are not `===`.
-- [ ] T032 [US1] `src/gm/scene.ts`: `fillTemplate(text, vars)` replaces each `{name}` with
+- [x] T032 [US1] `src/gm/scene.ts`: `fillTemplate(text, vars)` replaces each `{name}` with
   `vars.name` and leaves an unknown `{x}` as is; `sceneById(pack, id)` throws
   `Error('unknown scene: <id>')`; `choiceOptions(scene): Option[]` numbers the scene's choices from 1
   (`{ n, id: choice.id, label: choice.label }`); `narrate(ctx, key, vars)`: `variant = 0` when
@@ -346,7 +346,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     `{ type: 'narrate', template: 'scene.start', variant: 0, vars: { place: 'a door' }, quotes:
     [{ character: 'Ana', text: 'hi' }] }`; `s.quotes` is then `{}`; no RNG face used.
   - with `pack.templates['scene.start'] = ['a', 'b']` and `fixedRng([2])` -> `variant 1`.
-- [ ] T044 [US1] `src/seats/bot.ts`: `botDeclaration(s: GameState, seatIndex: number, pack: Pack):
+- [x] T044 [US1] `src/seats/bot.ts`: `botDeclaration(s: GameState, seatIndex: number, pack: Pack):
   Declaration` for `s.window.options`. The seat's `character.bot` decides:
   - scene window: the first id in `bot.prefer` that is among the options, else the scene's
     `default` choice; `cp: 1` only when `spendCp === 'on-checks'`, that choice has a `check` and
@@ -366,7 +366,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     `attack-weakest` -> 2, `attack-strongest` -> 1, `dodge` -> 3; `grunt#1` `incapacitated` and
     `attack-first` -> 2.
   - combat cp: `when-out-of-options` and seat `wounded` -> `cp: 1`; seat `stunned` -> `cp: 0`.
-- [ ] T046 [US1] `src/seats/viewers.ts`: `recordFor(s, userId, characterId): { points: Points;
+- [x] T046 [US1] `src/seats/viewers.ts`: `recordFor(s, userId, characterId): { points: Points;
   advances: Record<string, string> } | null`; `saveSeat(s, seatIndex)`: when the seat is held by a
   viewer, writes `s.viewers[userId].characters[character.id] = { points: { ...points }, advances:
   { ...advances } }` (creating the records), else does nothing; `resetSeatCharacter(s, seatIndex,
@@ -376,7 +376,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   `cp 7` -> `saveSeat` -> `s.viewers.u1.characters.ana.points` = `{ cp: 7, fp: 1 }`; `saveSeat` on a
   bot seat leaves `s.viewers` `{}`; seat 0 `cp 2`, `wound 'wounded'` -> `resetSeatCharacter` ->
   `cp 5`, wound still `wounded`.
-- [ ] T050 [US1] `src/seats/seats.ts`: `seatOf(s, userId): Seat | undefined`;
+- [x] T050 [US1] `src/seats/seats.ts`: `seatOf(s, userId): Seat | undefined`;
   `freeCharacters(s): string[]` (names of bot-held seats' characters, seat order);
   `claimSeat(ctx, actor, seatIndex)`: holder `{ kind: 'viewer', userId, login, activeFromRound }`
   with `activeFromRound = s.round + 1` when `s.window` is open, else `s.round`; `missed 0`; the
@@ -399,7 +399,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   - waitlist `[{ userId: 'u5', login: 'viewer5', character: 'ana' }]`, release seat 0 -> events
     `seat-released`, `unwaitlisted { userId: 'u5' }`, `seat-claimed { seat: 0, userId: 'u5' }`;
     waitlist empty.
-- [ ] T035 [US1] `src/gm/round.ts`:
+- [x] T035 [US1] `src/gm/round.ts`:
   - `effectiveCode(char: Character | Npc, skill, pack, actions: number, fp: boolean): DiceCode` =
     `skillCode` (attribute from `pack.skills`), doubled with `doubleDice` when `fp` (before any
     penalty), then `minusDice(code, WOUND_PENALTY[wound] + multiActionPenalty(actions))`.
@@ -451,7 +451,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   - missed: seat 0 held by active `u1` with no declaration, seats 1-3 bots on `go` -> `missed { seat:
     0, userId: 'u1', login: 'viewer1', count: 1 }`, `vote { tally: { 1: 4 } }`; the same with
     `missed` already 1 -> `missed { count: 2 }`, `seat-released { reason: 'missed' }`, then `vote`.
-- [ ] T036 [US1] `src/gm/combat.ts`:
+- [x] T036 [US1] `src/gm/combat.ts`:
   - `npcOut(npc)`: `WOUND_ORDER` index of `wound` >= index of `outAt`. `whoName(s, who)`: a seat's
     character name, or an NPC's `<name> <n>` (`grunt#1` -> `Grunt 1`).
   - `spawnNpcs(ctx, scene)`: for each `{ npc, count }` in order, NPCs with `uid` `<id>#<k>` (k from
@@ -524,7 +524,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     both miss, then `wound { target: 'seat:0', from: 'stunned', to: 'healthy' }`.
   - flee: three of four seats pick `flee` -> returns `'start'` with no `roll` events
     (`fixedRng([])`).
-- [ ] T037 [US1] `src/gm/endings.ts`: `enterEnding(ctx, scene)`: `s.ending = scene.ending`; emit
+- [x] T037 [US1] `src/gm/endings.ts`: `enterEnding(ctx, scene)`: `s.ending = scene.ending`; emit
   `ended { ending, sceneId }`; for each seat held by a viewer: `points.cp +=
   adventure.rewards[ending]`, `saveSeat`, emit `rewards { userId, login, cp }`; every seat's `wound
   'healthy'` and `stunnedUntil null`; `npcs []`; `window null`; phase `ended`. Test
@@ -532,7 +532,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   events `ended { ending: 'victory', sceneId: 'win' }`, `rewards { userId: 'u1', login: 'viewer1',
   cp: 2 }` (one `rewards`: bot seats get none); `s.viewers.u1.characters.ana.points.cp === 5`; seat
   1 `healthy`; phase `ended`.
-- [ ] T045 [US1] `src/gm/flow.ts`, the only module that moves between scenes:
+- [x] T045 [US1] `src/gm/flow.ts`, the only module that moves between scenes:
   - `enterScene(ctx, id)`: `sceneById`; `s.sceneId = id`; `npcs []`, `initiative []`, `dodges {}`,
     `combatRound 0`, `window null`, `declarations {}`; emit `scene-entered { sceneId }`;
     `narrate(ctx, scene.template, scene.facts)`. An `ending` scene: `enterEnding`, stop. A `combat`
@@ -557,7 +557,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
     'timeout', sceneId: 'out-of-time' }`.
   - after `enterScene(ctx, 'start')`, `resolveWindow` with `fixedRng([5,5, 2,2, 2,2, 2,2, 2,2])` ->
     first event `vote`, then `scene-entered fight`; phase `combat`; `window.round 2`.
-- [ ] T039 [US1] `src/engine/apply.ts` + `src/engine/index.ts`: `apply(state, cmd, rng, pack) -> {
+- [x] T039 [US1] `src/engine/apply.ts` + `src/engine/index.ts`: `apply(state, cmd, rng, pack) -> {
   state, events }`: `structuredClone(state)` once, build a `GmCtx` (`at = cmd.at`, `emit` pushes
   onto `events`), dispatch, then `state.rng = rng.state` and `state.seq += events.length`. Also
   `reopenWindow(state, at)` (contracts/events.md "The snapshot": the open window gets `opensAt = at`,
@@ -602,12 +602,12 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   - `reopenWindow` on a scene state at 500000 -> `window.endsAt` 560000, same `round` and
     declarations.
   - the same seed and command list twice -> equal event arrays (determinism).
-- [ ] T052 [P] [US1] `src/runtime/parse.ts` per contracts/chat-commands.md "Grammar". Test
+- [x] T052 [P] [US1] `src/runtime/parse.ts` per contracts/chat-commands.md "Grammar". Test
   `tests/runtime/parse.test.ts`, one case per table row, plus: `'hello'` null, `' !JOIN Kestrel '`
   -> join `kestrel`, `'!0'` null, `'!10'` null, `'!roll'` null, `'!cp 0'` null, `'!cp two'` null,
   `'!gm kick @SomeOne'` -> target `someone`, `'!say ' + 'x'.repeat(300)` -> text length 200,
   `'!dance'` null.
-- [ ] T053 [P] [US1] `src/runtime/replies.ts` per contracts/chat-commands.md "Reply lines":
+- [x] T053 [P] [US1] `src/runtime/replies.ts` per contracts/chat-commands.md "Reply lines":
   `replyLines(events, state, pack)`, `narrationLine(e, pack)` (the template, variant `e.variant`,
   filled with `e.vars`, then each quote as ` <character>: "<text>"`), and `chatLines(events, state,
   pack): string[]`, every line in event order (a `narrate` -> `narrationLine`, any other event ->
@@ -617,7 +617,7 @@ emits through `ctx.emit`. `Who` is `'seat:<index>'` for a seat and the NPC's `ui
   names `Spark Die`; `narrationLine` of `narrate { template: 'scene.start', variant: 0, vars: {
   place: 'a door' }, quotes: [] }` on the tiny pack -> `'scene.start line'`; `chatLines([seat-claimed,
   narrate, ignored])` -> two lines, the claim line first.
-- [ ] T038 [US1] the offline runner:
+- [x] T038 [US1] the offline runner:
   - `src/runtime/log.ts`: `toLogLines(events, before, at): LogLine[]` and `formatLogLine(line):
     string` per contracts/events.md "The JSONL log line" (keys in contract order).
   - `src/sim/clock.ts`: `FakeClock(start)`: `now()`, `setTimer(fn, ms)`, `clearTimer(id)`,

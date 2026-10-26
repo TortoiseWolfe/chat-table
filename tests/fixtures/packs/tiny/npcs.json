@@ -1,0 +1,33 @@
+[
+  {
+    "id": "grunt",
+    "name": "Grunt",
+    "attributes": {
+      "reflexes": "2D",
+      "coordination": "2D",
+      "physique": "2D",
+      "knowledge": "2D",
+      "perception": "2D",
+      "presence": "2D"
+    },
+    "skills": [
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "2D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pistol",
+        "name": "Pistol",
+        "skill": "marksmanship",
+        "damage": "3D",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "outAt": "wounded",
+    "tactic": "attack-first"
+  }
+]
