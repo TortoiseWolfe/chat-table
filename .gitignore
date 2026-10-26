@@ -1,0 +1,16 @@
+# secrets and tokens
+.env
+.env.*
+!.env.example
+*.token.json
+
+# private content packs (licensed settings never enter this repo)
+packs-private/
+
+# build and runtime output
+node_modules/
+dist/
+coverage/
+data/
+*.log
+.DS_Store
