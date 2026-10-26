@@ -8,5 +8,5 @@
     "MD041": false,
     "MD038": false
   },
-  "globs": ["README.md", "OGL.md", "docs/**/*.md", "features/**/*.md"]
+  "globs": ["README.md", "OGL.md", "docs/**/*.md", "features/**/*.md", "packs/**/*.md"]
 }
