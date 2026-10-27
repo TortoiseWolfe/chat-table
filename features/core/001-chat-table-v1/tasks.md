@@ -878,7 +878,7 @@ green. Frontier runs come with T061.
   so the shipped `node_modules` is scanned too), and publish
   `ghcr.io/tortoisewolfe/chat-table` on a tag push (`docker/build-push-action`, `GITHUB_TOKEN`
   with `packages: write`) (FR-031, FR-033).
-- [x] T087 README "Running it" from quickstart.md section 3, checked on a clean machine (SC-012).
+- [x] T087 README "Running it" from quickstart.md section 3, checked on a clean machine (SC-012): 27 Oct 2026, clean clone, sim seed 42.
 
 ---
 
