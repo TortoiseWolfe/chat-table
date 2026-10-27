@@ -113,7 +113,7 @@ function lineFor(events: Event[], i: number, s: GameState, pack: Pack): string |
           const list = s.seats
             .map(
               (seat) =>
-                `${seat.character.name} (${seat.character.concept}, ${seat.holder.kind === 'bot' ? 'free' : 'taken'})`,
+                `${seat.character.name} (${seat.character.concept}, ${seat.holder.kind === 'bot' ? 'free' : 'taken'})`
             )
             .join('; ');
           return `Characters: ${list}. Type !join <name>.`;
@@ -122,7 +122,9 @@ function lineFor(events: Event[], i: number, s: GameState, pack: Pack): string |
           const seat = seatOf(s, e.to);
           if (!seat) return `@${e.login} you need a seat for that. Type !join.`;
           const c = seat.character;
-          const attrs = ATTRS.map(([k, abbr]) => `${abbr} ${formatDiceCode(c.attributes[k])}`).join(', ');
+          const attrs = ATTRS.map(([k, abbr]) => `${abbr} ${formatDiceCode(c.attributes[k])}`).join(
+            ', '
+          );
           const skills = c.skills.map((sk) => `${sk.name} ${formatDiceCode(sk.code)}`).join(', ');
           const wound = c.wound.replace(/-/g, ' ');
           const woundText = wound.charAt(0).toUpperCase() + wound.slice(1);
@@ -132,7 +134,7 @@ function lineFor(events: Event[], i: number, s: GameState, pack: Pack): string |
           const seats = s.seats
             .map(
               (seat) =>
-                `${seat.character.name} (${seat.holder.kind === 'viewer' ? seat.holder.login : 'bot'})`,
+                `${seat.character.name} (${seat.holder.kind === 'viewer' ? seat.holder.login : 'bot'})`
             )
             .join(', ');
           return `Scene: ${s.sceneId ?? 'none'}, round ${s.round}/${pack.adventure.roundLimit}. Seats: ${seats}. In line: ${s.waitlist.length}.`;
@@ -155,11 +157,23 @@ export function replyLines(events: Event[], state: GameState, pack: Pack): strin
   return out;
 }
 
-export function chatLines(events: Event[], state: GameState, pack: Pack): string[] {
-  const out: string[] = [];
+export interface ChatItem {
+  line: string;
+  narrate: Narrate | null;
+}
+
+/** Chat lines in event order; a narrate event carries its event so a narrator can reword it. */
+export function chatItems(events: Event[], state: GameState, pack: Pack): ChatItem[] {
+  const out: ChatItem[] = [];
   events.forEach((e, i) => {
     const line = e.type === 'narrate' ? narrationLine(e, pack) : lineFor(events, i, state, pack);
-    if (line !== null) out.push(cut(line));
+    if (line !== null) out.push({ line: cut(line), narrate: e.type === 'narrate' ? e : null });
   });
   return out;
 }
+
+export function chatLines(events: Event[], state: GameState, pack: Pack): string[] {
+  return chatItems(events, state, pack).map((item) => item.line);
+}
+
+export { cut as cutLine };

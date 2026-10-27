@@ -826,7 +826,7 @@ green. Frontier runs come with T061.
 
 ## Phase 3: User Story 5, narration (P2)
 
-- [ ] T070 [US5] `src/narrator/facts.ts` (`factsFor(event, state, pack)`: scene facts plus event
+- [x] T070 [US5] `src/narrator/facts.ts` (`factsFor(event, state, pack)`: scene facts plus event
   vars, string values only), `src/narrator/sanitize.ts`, `src/narrator/client.ts`,
   `src/narrator/narrator.ts` per contracts/narrator.md; wire into `session.ts` (lines sent in `seq`
   order). Tests `tests/narrator/*.test.ts` with an injected `fetch`: no config -> fallback, no
@@ -834,7 +834,7 @@ green. Frontier runs come with T061.
   500 -> fallback; a 501-character answer -> fallback; `see www.example.com/x` -> fallback;
   `@someone hi` -> fallback; a good answer -> trimmed answer; a quote containing `"` and a newline
   is sent as one quoted line with `'`; the request body never contains a key named `apiKey`.
-- [ ] T071 [US5] sim flag `--narrator <url>` and a test: with a dead endpoint (fetch rejects) Frontier
+- [x] T071 [US5] sim flag `--narrator <url>` and a test: with a dead endpoint (fetch rejects) Frontier
   seed 42 still reaches `ended`, all lines templated (SC-003).
 - [ ] T072 [US5] `docs/narrator-bakeoff.md` (SC-005): record 5 sim sessions, run each candidate
   model on their `narrate` events, score with the rubric in contracts/narrator.md, record p95

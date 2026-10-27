@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS } from '../../src/engine/state.js';
+import type { Narrator } from '../../src/narrator/narrator.js';
 import type { Deps } from '../../src/runtime/deps.js';
 import type { ChatMessage } from '../../src/runtime/parse.js';
 import { createSession } from '../../src/runtime/session.js';
@@ -10,7 +11,7 @@ import { tinyPack } from '../helpers/tinyPack.js';
 
 const START = 1793000000000;
 
-function setup(fs = memFs(), clock = new FakeClock(START)) {
+function setup(fs = memFs(), clock = new FakeClock(START), narrator?: Narrator) {
   const logs: string[] = [];
   const sent: string[] = [];
   const deps: Deps = {
@@ -37,6 +38,7 @@ function setup(fs = memFs(), clock = new FakeClock(START)) {
     },
     botUserId: 'bot',
     channelId: 'chan',
+    ...(narrator ? { narrator } : {}),
   });
   const msg = (over: Partial<ChatMessage> = {}): ChatMessage => ({
     messageId: 'm1',
@@ -116,5 +118,31 @@ describe('createSession', () => {
       .filter((l) => l.includes('"type":"vote"'));
     expect(vote).toHaveLength(1);
     expect((JSON.parse(vote[0]!) as { round: number }).round).toBe(round);
+  });
+
+  it('with a narrator, a slow narration never lets a later line overtake it or hold the queue', async () => {
+    let release: (text: string) => void = () => undefined;
+    const calls: string[] = [];
+    const narrator: Narrator = {
+      narrate: (input) => {
+        calls.push(input.template);
+        return calls.length === 1
+          ? new Promise<string>((resolve) => {
+              release = resolve;
+            })
+          : Promise.resolve(input.fallback);
+      },
+    };
+    const t = setup(memFs(), new FakeClock(START), narrator);
+    await t.session.start();
+    await t.session.host('start');
+    await t.session.chat(t.msg());
+    await t.session.chat(t.msg({ messageId: 'm2', userId: 'u2', login: 'viewer2', text: '!status' }));
+    expect(t.sent).toEqual([]);
+    expect(t.logLines()).toBeGreaterThan(8);
+    release('The first scene, reworded.');
+    await t.session.idle();
+    expect(t.sent[0]).toBe('The first scene, reworded.');
+    expect(t.sent.length).toBeGreaterThan(1);
   });
 });
