@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>chat-table admin</title>
+    <style>
+      body { font: 16px system-ui, sans-serif; margin: 12px; background: #1b2330; color: #f4f1e8; }
+      button { font: inherit; margin: 0 6px 6px 0; padding: 6px 14px; }
+      pre { white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>chat-table</h1>
+    <div>
+      <button data-action="start">Start</button>
+      <button data-action="pause">Pause</button>
+      <button data-action="stop">Stop</button>
+      <button data-action="skip">Skip scene</button>
+    </div>
+    <div>
+      <label>Kick <input id="login" placeholder="viewer login" /></label>
+      <button id="kick">Kick</button>
+    </div>
+    <pre id="state"></pre>
+    <script>
+      const key = new URLSearchParams(location.hash.slice(1)).get('key') || '';
+      const headers = { authorization: 'Bearer ' + key, 'content-type': 'application/json' };
+      async function refresh() {
+        const res = await fetch('/admin/api/state', { headers });
+        document.getElementById('state').textContent =
+          res.status === 200 ? JSON.stringify(await res.json(), null, 2) : 'status ' + res.status;
+      }
+      async function post(action, body) {
+        await fetch('/admin/api/' + action, { method: 'POST', headers, body: JSON.stringify(body || {}) });
+        await refresh();
+      }
+      for (const b of document.querySelectorAll('[data-action]')) {
+        b.addEventListener('click', () => post(b.dataset.action));
+      }
+      document.getElementById('kick').addEventListener('click', () => {
+        post('kick', { login: document.getElementById('login').value.trim() });
+      });
+      refresh();
+      setInterval(refresh, 5000);
+    </script>
+  </body>
+</html>

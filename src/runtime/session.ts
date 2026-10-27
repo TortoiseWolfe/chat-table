@@ -4,6 +4,7 @@ import type { Pack } from '../engine/pack.js';
 import { createRng } from '../engine/rng.js';
 import { initialState, type GameState, type Settings } from '../engine/state.js';
 import type { Deps } from './deps.js';
+import { toLogLines, type LogLine } from './log.js';
 import { parseCommand, type ChatMessage } from './parse.js';
 import { createQueue } from './queue.js';
 import { factsFor } from '../narrator/facts.js';
@@ -23,6 +24,8 @@ export interface SessionOptions {
   botUserId: string;
   channelId: string;
   narrator?: Narrator;
+  /** Called after each applied command with its new log lines and the new state. */
+  onLog?: (lines: LogLine[], state: GameState) => void;
 }
 
 export interface Session {
@@ -30,10 +33,11 @@ export interface Session {
   chat(msg: ChatMessage): Promise<void>;
   host(action: AdminAction, target?: string): Promise<void>;
   idle(): Promise<void>;
+  state(): GameState | null;
 }
 
 export function createSession(opts: SessionOptions): Session {
-  const { deps, pack, settings, seed, store, send, botUserId, channelId, narrator } = opts;
+  const { deps, pack, settings, seed, store, send, botUserId, channelId, narrator, onLog } = opts;
   let state: GameState | null = null;
   let timer: unknown = null;
   const seen = new Map<string, number>();
@@ -74,6 +78,7 @@ export function createSession(opts: SessionOptions): Session {
         state = result.state;
         await store.append(result.events, before, cmd.at);
         await store.snapshot(state, deps.now());
+        onLog?.(toLogLines(result.events, before, cmd.at), state);
         if (
           result.events.some(
             (e) => e.type === 'rewards' || e.type === 'seat-released' || e.type === 'stopped'
@@ -142,6 +147,8 @@ export function createSession(opts: SessionOptions): Session {
       if (target !== undefined) cmd.target = target;
       return queue.push(cmd);
     },
+
+    state: () => state,
 
     async idle() {
       await queue.idle();

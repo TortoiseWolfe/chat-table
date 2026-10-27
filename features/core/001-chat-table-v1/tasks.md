@@ -844,13 +844,13 @@ green. Frontier runs come with T061.
 
 ## Phase 4: User Stories 3, 4 and 6, Twitch, overlay, admin, image (P1/P2)
 
-- [ ] T080 [US3] `src/twitch/bucket.ts`: `createBucket({ limit, windowMs: 30000, minGapMs: 1000,
+- [x] T080 [US3] `src/twitch/bucket.ts`: `createBucket({ limit, windowMs: 30000, minGapMs: 1000,
   maxLen: 500, now })`: `offer(line)` queues, `drain()` returns the lines allowed now; lines over
   500 characters are cut (T053 rule); when the queue holds more than `limit` lines the oldest
   replies to one user are merged, then dropped with a logged reason (FR-023). Test: 50 `!join`
   replies in 1 s with `limit 20` -> never more than 20 sent in any 30 s window, gaps >= 1 s, every
   drop logged; `limit 100` when the bot is a moderator.
-- [ ] T081 [US3] `src/twitch/auth.ts`: device-code login (`login` subcommand), `token.json` mode
+- [x] T081 [US3] `src/twitch/auth.ts`: device-code login (`login` subcommand), `token.json` mode
   0600 in `DATA_DIR`, validate at start and hourly, refresh before expiry; tokens never logged
   (FR-024). Test with injected `fetch` and clock: an expiring token is refreshed at the hourly
   check with no gap (US3 scenario 7); the log output never contains the token string.
@@ -867,13 +867,13 @@ green. Frontier runs come with T061.
   line; asset paths with `..` -> 404. Playwright (pinned 1.64.1, its own container) screenshots of
   a sim session at 1920x1080 show map, tokens, wound bars, initiative with timer, feed and dice
   (SC-008); an update shows within 1 s (US4).
-- [ ] T084 [US6] `src/admin/server.ts` + `src/admin/public/index.html` per contracts/http.md. Tests:
+- [x] T084 [US6] `src/admin/server.ts` + `src/admin/public/index.html` per contracts/http.md. Tests:
   no or wrong bearer -> 401; each button posts and the session state changes as named (US6
   scenario 1: pause stops timers and saves); `kick` without `login` -> 400.
 - [ ] T085 [US3] `src/main.ts`: builds real `Deps` (only file that does), `parseEnv`, loads the pack
   (`PACK`, or `--pack`), the session, Twitch adapter, HTTP server; subcommands `login` and `run`
   (default); prints the admin dock URL once. `.env.example` with every variable and a comment.
-- [ ] T086 [US7] CI: build the image, run the guard inside it over `/app`
+- [x] T086 [US7] CI: build the image, run the guard inside it over `/app`
   (`docker run --rm image node dist/guard/cli.js /app --all --denylist /app/guard/denylist.sha256`,
   so the shipped `node_modules` is scanned too), and publish
   `ghcr.io/tortoisewolfe/chat-table` on a tag push (`docker/build-push-action`, `GITHUB_TOKEN`
