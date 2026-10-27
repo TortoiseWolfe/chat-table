@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_SETTINGS, initialState } from '../../src/engine/state.js';
 import { formatLogLine, toLogLines } from '../../src/runtime/log.js';
@@ -57,5 +58,19 @@ describe('runSim', () => {
     expect((JSON.parse(last) as { type: string }).type).toBe('ended');
     const b = runSim({ pack: tinyPack(), seed: 1 });
     expect(b.log).toBe(a.log);
+  });
+
+  it('plays two scripted viewers to the end and rewards each (SC-001)', () => {
+    const script = parseScript(readFileSync('tests/fixtures/sim/two-viewers.txt', 'utf8'));
+    const r = runSim({ pack: tinyPack(), seed: 1, script });
+    expect(r.state.phase).toBe('ended');
+    const events = r.log
+      .trimEnd()
+      .split('\n')
+      .map((l) => JSON.parse(l) as { type: string; userId?: string });
+    for (const id of ['sim-viewer1', 'sim-viewer2']) {
+      expect(events.filter((e) => e.type === 'seat-claimed' && e.userId === id)).toHaveLength(1);
+      expect(events.filter((e) => e.type === 'rewards' && e.userId === id)).toHaveLength(1);
+    }
   });
 });

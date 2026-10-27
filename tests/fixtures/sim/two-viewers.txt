@@ -1,0 +1,5 @@
+# Two scripted viewers take seats and play to the end (tiny pack).
+5 viewer1 !join ana
+6 viewer2 !join
+every 10 viewer1 !1
+every 11 viewer2 !1
