@@ -30,6 +30,8 @@ export interface Env {
   cpPerRollMax: number;
   narratorTimeoutMs: number;
   narratorUrl?: string;
+  narratorModel?: string;
+  narratorApiKey?: string;
   twitchClientId?: string;
   twitchClientSecret?: string;
   twitchBroadcasterLogin?: string;
@@ -73,6 +75,10 @@ export function parseEnv(env: Record<string, string | undefined>, mode: 'twitch'
   };
   const narratorUrl = env['NARRATOR_URL'];
   if (narratorUrl) out.narratorUrl = narratorUrl;
+  const narratorModel = env['NARRATOR_MODEL'];
+  if (narratorModel) out.narratorModel = narratorModel;
+  const narratorApiKey = env['NARRATOR_API_KEY'];
+  if (narratorApiKey) out.narratorApiKey = narratorApiKey;
 
   const twitch: [string, keyof Env][] = [
     ['TWITCH_CLIENT_ID', 'twitchClientId'],

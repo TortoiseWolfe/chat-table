@@ -73,4 +73,23 @@ describe('createBucket', () => {
     const { sent } = run(2, joins(2), 40);
     expect(sent).toHaveLength(2);
   });
+
+  it('allows more per window after setLimit raises the allowance', () => {
+    let t = 0;
+    const bucket = createBucket({ limit: 2, now: () => t });
+    const sent: string[] = [];
+    for (const o of joins(2)) bucket.offer(o);
+    for (let s = 0; s < 3; s++) {
+      t = s * 1000;
+      sent.push(...bucket.drain());
+    }
+    expect(sent).toHaveLength(2);
+    bucket.setLimit(100);
+    for (const o of joins(5)) bucket.offer(o);
+    for (let s = 3; s < 12; s++) {
+      t = s * 1000;
+      sent.push(...bucket.drain());
+    }
+    expect(sent).toHaveLength(7);
+  });
 });

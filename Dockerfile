@@ -12,6 +12,9 @@ ENV NODE_ENV=production DATA_DIR=/data PACK=/app/packs/frontier
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/dist dist
+# The overlay and dock pages: dist/main.js reads them from ../src/*/public.
+COPY src/overlay/public src/overlay/public
+COPY src/admin/public src/admin/public
 COPY packs/frontier packs/frontier
 COPY OGL.md LICENSE ./
 COPY docs/licensing.md docs/licensing.md

@@ -137,12 +137,23 @@ describe('createSession', () => {
     await t.session.start();
     await t.session.host('start');
     await t.session.chat(t.msg());
-    await t.session.chat(t.msg({ messageId: 'm2', userId: 'u2', login: 'viewer2', text: '!status' }));
+    await t.session.chat(
+      t.msg({ messageId: 'm2', userId: 'u2', login: 'viewer2', text: '!status' })
+    );
     expect(t.sent).toEqual([]);
     expect(t.logLines()).toBeGreaterThan(8);
     release('The first scene, reworded.');
     await t.session.idle();
     expect(t.sent[0]).toBe('The first scene, reworded.');
     expect(t.sent.length).toBeGreaterThan(1);
+  });
+
+  it('pauses and saves when told the stream went offline', async () => {
+    const t = setup();
+    await t.session.start();
+    await t.session.host('start');
+    await t.session.offline();
+    expect(t.session.state()?.phase).toBe('paused');
+    expect(t.fs.files.get('/d/state.json')).toContain('"paused"');
   });
 });

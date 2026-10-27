@@ -43,4 +43,10 @@ describe('parseEnv', () => {
     expect(env.twitchBotLogin).toBe('d');
     expect(env.narratorUrl).toBe('http://n');
   });
+
+  it('reads the optional narrator model and key', () => {
+    const env = parseEnv({ NARRATOR_MODEL: 'm', NARRATOR_API_KEY: 'k' }, 'sim');
+    expect(env.narratorModel).toBe('m');
+    expect(env.narratorApiKey).toBe('k');
+  });
 });

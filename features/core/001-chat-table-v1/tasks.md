@@ -854,7 +854,7 @@ green. Frontier runs come with T061.
   0600 in `DATA_DIR`, validate at start and hourly, refresh before expiry; tokens never logged
   (FR-024). Test with injected `fetch` and clock: an expiring token is refreshed at the hourly
   check with no gap (US3 scenario 7); the log output never contains the token string.
-- [ ] T082 [US3] `src/twitch/eventsub.ts`, `src/twitch/outbound.ts`, `src/twitch/adapter.ts` on
+- [x] T082 [US3] `src/twitch/eventsub.ts`, `src/twitch/outbound.ts`, `src/twitch/adapter.ts` on
   `@twurple/eventsub-ws` 8.2.0 (`url` option for the mock), `@twurple/api`: subscribe to
   `channel.chat.message` and `stream.offline`; map messages to `ChatMessage`; `stream.offline` ->
   `offline` command (FR-025). Tests against the Twitch CLI mock server (`twitch event websocket
@@ -870,7 +870,7 @@ green. Frontier runs come with T061.
 - [x] T084 [US6] `src/admin/server.ts` + `src/admin/public/index.html` per contracts/http.md. Tests:
   no or wrong bearer -> 401; each button posts and the session state changes as named (US6
   scenario 1: pause stops timers and saves); `kick` without `login` -> 400.
-- [ ] T085 [US3] `src/main.ts`: builds real `Deps` (only file that does), `parseEnv`, loads the pack
+- [x] T085 [US3] `src/main.ts`: builds real `Deps` (only file that does), `parseEnv`, loads the pack
   (`PACK`, or `--pack`), the session, Twitch adapter, HTTP server; subcommands `login` and `run`
   (default); prints the admin dock URL once. `.env.example` with every variable and a comment.
 - [x] T086 [US7] CI: build the image, run the guard inside it over `/app`
@@ -878,7 +878,7 @@ green. Frontier runs come with T061.
   so the shipped `node_modules` is scanned too), and publish
   `ghcr.io/tortoisewolfe/chat-table` on a tag push (`docker/build-push-action`, `GITHUB_TOKEN`
   with `packages: write`) (FR-031, FR-033).
-- [ ] T087 README "Running it" from quickstart.md section 3, checked on a clean machine (SC-012).
+- [x] T087 README "Running it" from quickstart.md section 3, checked on a clean machine (SC-012).
 
 ---
 
