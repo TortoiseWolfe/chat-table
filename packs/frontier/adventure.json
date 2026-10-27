@@ -1,0 +1,193 @@
+{
+  "start": "dock",
+  "roundLimit": 30,
+  "rewards": {
+    "victory": 3,
+    "defeat": 1,
+    "timeout": 1
+  },
+  "scenes": [
+    {
+      "id": "dock",
+      "template": "scene.dock",
+      "facts": {
+        "place": "the cargo dock"
+      },
+      "choices": [
+        {
+          "id": "corridor",
+          "label": "Take the corridor",
+          "next": "corridor"
+        },
+        {
+          "id": "vent",
+          "label": "Crawl into the vent",
+          "next": "vent"
+        }
+      ],
+      "default": "corridor"
+    },
+    {
+      "id": "corridor",
+      "template": "scene.corridor",
+      "facts": {
+        "place": "the service corridor"
+      },
+      "choices": [
+        {
+          "id": "push",
+          "label": "Push through",
+          "next": "ambush"
+        },
+        {
+          "id": "scan",
+          "label": "Search the walls",
+          "check": {
+            "skill": "search",
+            "difficulty": "easy",
+            "success": "airlock",
+            "failure": "ambush"
+          }
+        }
+      ],
+      "default": "push"
+    },
+    {
+      "id": "vent",
+      "template": "scene.vent",
+      "facts": {
+        "place": "the air vent"
+      },
+      "choices": [
+        {
+          "id": "drop",
+          "label": "Drop into control",
+          "check": {
+            "skill": "sneak",
+            "difficulty": "moderate",
+            "success": "control",
+            "failure": "ambush"
+          }
+        },
+        {
+          "id": "back",
+          "label": "Go back",
+          "next": "dock"
+        }
+      ],
+      "default": "drop"
+    },
+    {
+      "id": "ambush",
+      "template": "scene.ambush",
+      "facts": {
+        "place": "the corridor junction"
+      },
+      "combat": {
+        "npcs": [
+          {
+            "npc": "scrapper",
+            "count": 2
+          }
+        ],
+        "win": "airlock",
+        "lose": "lost",
+        "flee": "dock"
+      }
+    },
+    {
+      "id": "airlock",
+      "template": "scene.airlock",
+      "facts": {
+        "place": "the airlock"
+      },
+      "choices": [
+        {
+          "id": "cycle",
+          "label": "Cycle the lock",
+          "check": {
+            "skill": "repair",
+            "difficulty": "moderate",
+            "success": "control",
+            "failure": "warden-fight"
+          }
+        },
+        {
+          "id": "hail",
+          "label": "Hail the warden",
+          "check": {
+            "skill": "persuasion",
+            "difficulty": "difficult",
+            "success": "escape",
+            "failure": "warden-fight"
+          }
+        }
+      ],
+      "default": "cycle"
+    },
+    {
+      "id": "control",
+      "template": "scene.control",
+      "facts": {
+        "place": "the control room"
+      },
+      "choices": [
+        {
+          "id": "seal",
+          "label": "Seal the doors",
+          "next": "warden-fight"
+        },
+        {
+          "id": "pilot",
+          "label": "Fly the hauler out",
+          "check": {
+            "skill": "piloting",
+            "difficulty": "moderate",
+            "success": "escape",
+            "failure": "warden-fight"
+          }
+        }
+      ],
+      "default": "seal"
+    },
+    {
+      "id": "warden-fight",
+      "template": "scene.warden-fight",
+      "facts": {
+        "place": "the hauler bay"
+      },
+      "combat": {
+        "npcs": [
+          {
+            "npc": "warden",
+            "count": 1
+          },
+          {
+            "npc": "scrapper",
+            "count": 1
+          }
+        ],
+        "win": "escape",
+        "lose": "lost"
+      }
+    },
+    {
+      "id": "escape",
+      "template": "scene.escape",
+      "facts": {},
+      "ending": "victory"
+    },
+    {
+      "id": "lost",
+      "template": "scene.lost",
+      "facts": {},
+      "ending": "defeat"
+    },
+    {
+      "id": "out-of-time",
+      "template": "scene.out-of-time",
+      "facts": {},
+      "ending": "timeout"
+    }
+  ]
+}

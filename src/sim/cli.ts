@@ -2,7 +2,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { loadPackSync } from '../packs/load.js';
 import { FakeClock } from './clock.js';
-import { createTable, runSim, SIM_EPOCH } from './run.js';
+import { createNarrator } from '../narrator/narrator.js';
+import { createTable, narrateLines, runSim, SIM_EPOCH } from './run.js';
 import { parseScript } from './script.js';
 
 interface Flags {
@@ -11,10 +12,20 @@ interface Flags {
   pack: string;
   out: string | null;
   interactive: boolean;
+  narrator: string | null;
+  narratorModel: string;
 }
 
 function parseFlags(argv: string[]): Flags {
-  const f: Flags = { seed: 1, script: null, pack: 'packs/frontier', out: null, interactive: false };
+  const f: Flags = {
+    seed: 1,
+    script: null,
+    pack: 'packs/frontier',
+    out: null,
+    interactive: false,
+    narrator: null,
+    narratorModel: 'default',
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     const value = (): string => {
@@ -26,6 +37,8 @@ function parseFlags(argv: string[]): Flags {
     else if (a === '--script') f.script = value();
     else if (a === '--pack') f.pack = value();
     else if (a === '--out') f.out = value();
+    else if (a === '--narrator') f.narrator = value();
+    else if (a === '--narrator-model') f.narratorModel = value();
     else if (a === '--interactive') f.interactive = true;
     else throw new Error(`unknown flag: ${a ?? ''}`);
   }
@@ -38,7 +51,7 @@ function writeOut(dir: string, log: string, state: unknown): void {
   writeFileSync(`${dir}/events.jsonl`, log);
   writeFileSync(
     `${dir}/state.json`,
-    JSON.stringify({ version: 1, savedAt: SIM_EPOCH, state }, null, 2) + '\n',
+    JSON.stringify({ version: 1, savedAt: SIM_EPOCH, state }, null, 2) + '\n'
   );
 }
 
@@ -77,7 +90,21 @@ async function main(): Promise<void> {
   const pack = loadPackSync(f.pack);
   const script = f.script ? parseScript(readFileSync(f.script, 'utf8')) : [];
   const r = runSim({ pack, seed: f.seed, script });
-  for (const l of r.lines) process.stdout.write(l + '\n');
+  let lines = r.lines;
+  if (f.narrator) {
+    const narrator = createNarrator(
+      { url: f.narrator, model: f.narratorModel, timeoutMs: 8000 },
+      {
+        fetch: globalThis.fetch,
+        setTimer: (fn, ms) => setTimeout(fn, ms),
+        clearTimer: (id) => clearTimeout(id as ReturnType<typeof setTimeout>),
+        log: (level, msg, data) =>
+          process.stderr.write(`${level}: ${msg} ${JSON.stringify(data ?? {})}\n`),
+      }
+    );
+    lines = await narrateLines(r, narrator);
+  }
+  for (const l of lines) process.stdout.write(l + '\n');
   if (f.out) writeOut(f.out, r.log, r.state);
 }
 

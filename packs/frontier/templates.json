@@ -1,0 +1,102 @@
+{
+  "scene.dock": [
+    "The crew stands in {place}, crates stacked high and one cold lamp swinging overhead. A corridor leads inward and a vent gapes in the wall.",
+    "Dust hangs in {place}. The hauler is somewhere beyond, and the only ways in are the corridor and a narrow vent.",
+    "The crew arrives at {place} with the shift bell long gone. Nobody is here, and every door is either too quiet or too loud."
+  ],
+  "scene.corridor": [
+    "The crew edges along {place}, pipes ticking on both sides. Something metal scrapes ahead.",
+    "Inside {place} it is narrow and badly lit. A draught carries the smell of hot oil from the far end.",
+    "Footsteps echo through {place}. The crew can push on or look for another way around."
+  ],
+  "scene.vent": [
+    "The crew crouches in {place}, the grille cold under their hands. A faint glow shows below.",
+    "Inside {place} it is tight and smells of burnt dust. Far below, a screen flickers in an empty room.",
+    "The crew slides into {place}. The only choices are to drop down or to turn back."
+  ],
+  "scene.ambush": [
+    "Two scrappers step out of the shadows at {place}, tools raised and in no mood to talk.",
+    "The crew reaches {place} and finds it blocked. Scrappers with rivet guns spread out to cut off the way back.",
+    "A shout rings out at {place}. Scrappers charge in from both sides."
+  ],
+  "scene.airlock": [
+    "The crew reaches {place}. A heavy lock stands between them and the hauler, and a light on the far side blinks red.",
+    "Inside {place} the air hums with idle pressure. A warden stands on the other side of the glass, watching.",
+    "The crew steps into {place}. The inner door is sealed, and the control panel waits for a steady hand."
+  ],
+  "scene.control": [
+    "The crew breathes out in {place}. Every screen shows the hauler bay, and the warden is moving toward it.",
+    "Inside {place} it is quiet apart from the hum of the machines. The doors can be sealed, or the hauler can be flown out right now.",
+    "Lights wake up across {place} as the crew arrives. There is not much time."
+  ],
+  "scene.warden-fight": [
+    "The warden turns in {place} and raises a pulse pistol. A scrapper lurches in beside them.",
+    "Inside {place} boots ring on the deck. The warden blocks the ramp and the scrapper covers the flank.",
+    "In {place} there is nowhere left to hide. The warden fires first."
+  ],
+  "scene.escape": [
+    "The hauler lifts free and the dock falls away behind it. The crew is out, and the night is theirs.",
+    "Engines roar and the doors blur past. The crew has made it out alive, and the frontier opens ahead.",
+    "The hauler clears the last gate. Nobody is chasing, and the crew can finally laugh."
+  ],
+  "scene.lost": [
+    "The crew goes down in the dark and the dock falls silent. The frontier keeps its secrets this time.",
+    "Alarms fade as the last light goes out. The hauler stays where it is, and so does the crew.",
+    "It ends here, quietly. Another crew will have to try the dock tomorrow."
+  ],
+  "scene.out-of-time": [
+    "The shift bell rings and the doors lock for the night. The crew has run out of time.",
+    "Dawn shift arrives and the dock fills with workers. The crew slips out before anyone looks closely.",
+    "Time runs out and the lamps flick off one by one. The crew will try again another night."
+  ],
+  "combat.start": [
+    "Weapons come up and the room goes still.",
+    "Somebody fires first, and then everyone does.",
+    "The standoff breaks. It is a fight now."
+  ],
+  "check.success": [
+    "{character} makes the {skill} look easy.",
+    "{character} gets the {skill} just right, and it holds.",
+    "A steady {skill} from {character} pays off."
+  ],
+  "check.failure": [
+    "{character} tries {skill}, but it does not come together.",
+    "The {skill} slips from {character}'s hands, and it costs them.",
+    "{character} misses with {skill} and has to think again."
+  ],
+  "check.complication": [
+    "Something shifts at the worst moment as {character} reaches for {skill}.",
+    "{character} hears a sharp crack while using {skill}, and not from the plan.",
+    "A small thing goes wrong around {character} while they try {skill}."
+  ],
+  "wound.stunned": [
+    "{target} reels, stunned.",
+    "{target} staggers and shakes their head, stunned.",
+    "The blow rings through {target}, who is stunned."
+  ],
+  "wound.wounded": [
+    "{target} is wounded and slows.",
+    "{target} takes a solid hit and is wounded.",
+    "A clean strike leaves {target} wounded."
+  ],
+  "wound.severely-wounded": [
+    "{target} is badly hurt, severely wounded.",
+    "{target} cries out. That one was severe.",
+    "Another hit on {target}, who is now severely wounded."
+  ],
+  "wound.incapacitated": [
+    "{target} drops, incapacitated.",
+    "{target} cannot go on and is out of the fight.",
+    "{target} falls and does not get up. Incapacitated."
+  ],
+  "wound.mortally-wounded": [
+    "{target} is mortally wounded and goes down hard.",
+    "{target} collapses, mortally wounded.",
+    "That blow nearly finishes {target}, who is mortally wounded."
+  ],
+  "wound.dead": [
+    "{target} is dead.",
+    "{target} does not move again.",
+    "The fight ends for {target}, for good."
+  ]
+}

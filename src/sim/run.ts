@@ -5,7 +5,9 @@ import { createRng } from '../engine/rng.js';
 import { DEFAULT_SETTINGS, initialState, type GameState, type Settings } from '../engine/state.js';
 import { formatLogLine, toLogLines } from '../runtime/log.js';
 import { parseCommand } from '../runtime/parse.js';
-import { chatLines } from '../runtime/replies.js';
+import { factsFor } from '../narrator/facts.js';
+import type { NarrateInput, Narrator } from '../narrator/narrator.js';
+import { chatItems } from '../runtime/replies.js';
 import type { ScriptLine } from './script.js';
 
 export const SIM_EPOCH = 1793000000000;
@@ -17,6 +19,8 @@ export interface Table {
   state(): GameState;
   lines: string[];
   log: string[];
+  /** Where each narrate line sits in `lines`, with what a narrator would be asked. */
+  narrations: { index: number; input: NarrateInput }[];
 }
 
 export function createTable(opts: { pack: Pack; seed: number; settings?: Settings }): Table {
@@ -24,6 +28,7 @@ export function createTable(opts: { pack: Pack; seed: number; settings?: Setting
   let s = initialState(pack, opts.seed, opts.settings ?? DEFAULT_SETTINGS);
   const lines: string[] = [];
   const log: string[] = [];
+  const narrations: Table['narrations'] = [];
   let counter = 0;
 
   const run = (cmd: Command): void => {
@@ -31,7 +36,22 @@ export function createTable(opts: { pack: Pack; seed: number; settings?: Setting
     const r = apply(before, cmd, createRng(before.rng), pack);
     s = r.state;
     for (const l of toLogLines(r.events, before, cmd.at)) log.push(formatLogLine(l));
-    lines.push(...chatLines(r.events, s, pack));
+    for (const item of chatItems(r.events, s, pack)) {
+      const e = item.narrate;
+      if (e) {
+        narrations.push({
+          index: lines.length,
+          input: {
+            template: e.template,
+            variant: e.variant,
+            facts: factsFor(e, s, pack),
+            quotes: e.quotes,
+            fallback: item.line,
+          },
+        });
+      }
+      lines.push(item.line);
+    }
   };
 
   return {
@@ -64,14 +84,16 @@ export function createTable(opts: { pack: Pack; seed: number; settings?: Setting
     state: () => s,
     lines,
     log,
+    narrations,
   };
 }
 
-export function runSim(opts: {
-  pack: Pack;
-  seed: number;
-  script?: ScriptLine[];
-}): { lines: string[]; log: string; state: GameState } {
+export function runSim(opts: { pack: Pack; seed: number; script?: ScriptLine[] }): {
+  lines: string[];
+  log: string;
+  state: GameState;
+  narrations: Table['narrations'];
+} {
   const { pack } = opts;
   const table = createTable({ pack, seed: opts.seed });
   const script = opts.script ?? [];
@@ -117,5 +139,20 @@ export function runSim(opts: {
     }
   }
   const lines = table.lines;
-  return { lines, log: table.log.join('\n') + '\n', state: table.state() };
+  return {
+    lines,
+    log: table.log.join('\n') + '\n',
+    state: table.state(),
+    narrations: table.narrations,
+  };
+}
+
+/** Reword a finished sim's narrate lines. The game is already decided; a narrator only changes text. */
+export async function narrateLines(
+  run: { lines: string[]; narrations: Table['narrations'] },
+  narrator: Narrator
+): Promise<string[]> {
+  const out = [...run.lines];
+  for (const n of run.narrations) out[n.index] = await narrator.narrate(n.input);
+  return out;
 }

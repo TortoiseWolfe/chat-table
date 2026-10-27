@@ -1,17 +1,15 @@
-import { apply, reopenWindow } from "../engine/apply.js";
-import type { AdminAction, Command } from "../engine/commands.js";
-import type { Pack } from "../engine/pack.js";
-import { createRng } from "../engine/rng.js";
-import {
-  initialState,
-  type GameState,
-  type Settings,
-} from "../engine/state.js";
-import type { Deps } from "./deps.js";
-import { parseCommand, type ChatMessage } from "./parse.js";
-import { createQueue } from "./queue.js";
-import { chatLines } from "./replies.js";
-import type { Store } from "./store.js";
+import { apply, reopenWindow } from '../engine/apply.js';
+import type { AdminAction, Command } from '../engine/commands.js';
+import type { Pack } from '../engine/pack.js';
+import { createRng } from '../engine/rng.js';
+import { initialState, type GameState, type Settings } from '../engine/state.js';
+import type { Deps } from './deps.js';
+import { parseCommand, type ChatMessage } from './parse.js';
+import { createQueue } from './queue.js';
+import { factsFor } from '../narrator/facts.js';
+import type { Narrator } from '../narrator/narrator.js';
+import { chatItems, cutLine, narrationLine } from './replies.js';
+import type { Store } from './store.js';
 
 const DEDUPE_MS = 10 * 60 * 1000;
 
@@ -24,6 +22,7 @@ export interface SessionOptions {
   send: (line: string) => Promise<void>;
   botUserId: string;
   channelId: string;
+  narrator?: Narrator;
 }
 
 export interface Session {
@@ -34,29 +33,42 @@ export interface Session {
 }
 
 export function createSession(opts: SessionOptions): Session {
-  const { deps, pack, settings, seed, store, send, botUserId, channelId } =
-    opts;
+  const { deps, pack, settings, seed, store, send, botUserId, channelId, narrator } = opts;
   let state: GameState | null = null;
   let timer: unknown = null;
   const seen = new Map<string, number>();
+  // With a narrator, lines go out through this chain in event order, so a slow narration
+  // never lets a later line overtake it and never holds the command queue.
+  let sendTail: Promise<void> = Promise.resolve();
+
+  function sendInOrder(line: string | Promise<string>): void {
+    sendTail = sendTail.then(async () => {
+      try {
+        await send(await line);
+      } catch (err) {
+        deps.log('error', 'send failed', {
+          message: err instanceof Error ? err.message : String(err),
+        });
+      }
+    });
+  }
 
   function arm(): void {
     if (timer !== null) deps.clearTimer(timer);
     timer = null;
     const s = state;
-    if (!s || !s.window || (s.phase !== "scene" && s.phase !== "combat"))
-      return;
+    if (!s || !s.window || (s.phase !== 'scene' && s.phase !== 'combat')) return;
     const wait = Math.max(0, s.window.endsAt - deps.now());
     timer = deps.setTimer(() => {
       timer = null;
-      void queue.push({ type: "tick", at: deps.now() });
+      void queue.push({ type: 'tick', at: deps.now() });
     }, wait);
   }
 
   const queue = createQueue<Command>(
     async (cmd) => {
       const before = state;
-      if (!before) throw new Error("session not started");
+      if (!before) throw new Error('session not started');
       try {
         const result = apply(before, cmd, createRng(before.rng), pack);
         state = result.state;
@@ -64,21 +76,37 @@ export function createSession(opts: SessionOptions): Session {
         await store.snapshot(state, deps.now());
         if (
           result.events.some(
-            (e) =>
-              e.type === "rewards" ||
-              e.type === "seat-released" ||
-              e.type === "stopped",
+            (e) => e.type === 'rewards' || e.type === 'seat-released' || e.type === 'stopped'
           )
         ) {
           await store.saveViewers(state.viewers);
         }
-        for (const line of chatLines(result.events, state, pack))
-          await send(line);
+        for (const item of chatItems(result.events, state, pack)) {
+          const e = item.narrate;
+          if (!narrator) {
+            await send(item.line);
+          } else if (e) {
+            const fallback = narrationLine(e, pack);
+            sendInOrder(
+              narrator
+                .narrate({
+                  template: e.template,
+                  variant: e.variant,
+                  facts: factsFor(e, state, pack),
+                  quotes: e.quotes,
+                  fallback,
+                })
+                .then((text) => cutLine(text === fallback ? item.line : text))
+            );
+          } else {
+            sendInOrder(item.line);
+          }
+        }
       } finally {
         arm();
       }
     },
-    (level, message, fields) => deps.log(level, message, fields),
+    (level, message, fields) => deps.log(level, message, fields)
   );
 
   function fresh(msg: ChatMessage): boolean {
@@ -110,11 +138,14 @@ export function createSession(opts: SessionOptions): Session {
     },
 
     host(action, target) {
-      const cmd: Command = { type: "host", at: deps.now(), action };
+      const cmd: Command = { type: 'host', at: deps.now(), action };
       if (target !== undefined) cmd.target = target;
       return queue.push(cmd);
     },
 
-    idle: () => queue.idle(),
+    async idle() {
+      await queue.idle();
+      await sendTail;
+    },
   };
 }
