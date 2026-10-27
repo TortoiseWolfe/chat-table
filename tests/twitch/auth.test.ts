@@ -102,4 +102,11 @@ describe('createAuth', () => {
     t.fs.files.delete('/d/token.json');
     await expect(t.auth.start()).rejects.toThrow();
   });
+
+  it('says whose token it is', async () => {
+    const { auth } = setup(8 * HOUR);
+    await auth.start();
+    expect(auth.who()).toEqual({ userId: '42', login: 'botty' });
+    auth.stop();
+  });
 });

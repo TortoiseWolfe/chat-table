@@ -21,10 +21,13 @@ export interface Bucket {
   offer(line: OutLine | string): void;
   drain(): string[];
   size(): number;
+  /** Change the per-window allowance, for example 100 once the bot is seen to be a moderator. */
+  setLimit(limit: number): void;
 }
 
 export function createBucket(opts: BucketOptions): Bucket {
-  const { limit, now } = opts;
+  const { now } = opts;
+  let limit = opts.limit;
   const windowMs = opts.windowMs ?? 30000;
   const minGapMs = opts.minGapMs ?? 1000;
   const maxLen = opts.maxLen ?? 500;
@@ -89,5 +92,9 @@ export function createBucket(opts: BucketOptions): Bucket {
     },
 
     size: () => queue.length,
+
+    setLimit(next) {
+      limit = next;
+    },
   };
 }

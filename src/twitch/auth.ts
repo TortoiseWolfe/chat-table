@@ -30,6 +30,8 @@ export interface Auth {
   start(): Promise<void>;
   /** The access token to use right now. */
   token(): string;
+  /** The Twitch user id and login the token belongs to. */
+  who(): { userId: string; login: string };
   stop(): void;
 }
 
@@ -188,6 +190,11 @@ export function createAuth(opts: AuthOptions): Auth {
     token() {
       if (!file) throw new Error('no Twitch token: run the login command first');
       return file.accessToken;
+    },
+
+    who() {
+      if (!file) throw new Error('no Twitch token: run the login command first');
+      return { userId: file.userId, login: file.login };
     },
 
     stop() {

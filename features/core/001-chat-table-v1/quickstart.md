@@ -49,7 +49,7 @@ Another pack: `--pack /path/to/pack` (the folder holding `pack.json`).
 3. Switch off any other bot on the channel that answers game commands, so only one bot replies
    (SC-013).
 4. Copy `.env.example` to `.env` and fill in `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`,
-   `TWITCH_CHANNEL` (your login) and `TWITCH_BOT_LOGIN`. Narration is optional: set `NARRATOR_URL`,
+   `TWITCH_BROADCASTER_LOGIN` (your login) and `TWITCH_BOT_LOGIN`. Narration is optional: set `NARRATOR_URL`,
    `NARRATOR_MODEL` and `NARRATOR_API_KEY` for any OpenAI-compatible endpoint, or leave them empty
    to use the pack's pre-written lines.
 5. Sign the bot in once (device code; open the printed link while signed in as the bot account):
