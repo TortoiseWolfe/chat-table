@@ -1,17 +1,13 @@
-import { apply, reopenWindow } from "../engine/apply.js";
-import type { AdminAction, Command } from "../engine/commands.js";
-import type { Pack } from "../engine/pack.js";
-import { createRng } from "../engine/rng.js";
-import {
-  initialState,
-  type GameState,
-  type Settings,
-} from "../engine/state.js";
-import type { Deps } from "./deps.js";
-import { parseCommand, type ChatMessage } from "./parse.js";
-import { createQueue } from "./queue.js";
-import { chatLines } from "./replies.js";
-import type { Store } from "./store.js";
+import { apply, reopenWindow } from '../engine/apply.js';
+import type { AdminAction, Command } from '../engine/commands.js';
+import type { Pack } from '../engine/pack.js';
+import { createRng } from '../engine/rng.js';
+import { initialState, type GameState, type Settings } from '../engine/state.js';
+import type { Deps } from './deps.js';
+import { parseCommand, type ChatMessage } from './parse.js';
+import { createQueue } from './queue.js';
+import { chatLines } from './replies.js';
+import type { Store } from './store.js';
 
 const DEDUPE_MS = 10 * 60 * 1000;
 
@@ -34,8 +30,7 @@ export interface Session {
 }
 
 export function createSession(opts: SessionOptions): Session {
-  const { deps, pack, settings, seed, store, send, botUserId, channelId } =
-    opts;
+  const { deps, pack, settings, seed, store, send, botUserId, channelId } = opts;
   let state: GameState | null = null;
   let timer: unknown = null;
   const seen = new Map<string, number>();
@@ -44,19 +39,18 @@ export function createSession(opts: SessionOptions): Session {
     if (timer !== null) deps.clearTimer(timer);
     timer = null;
     const s = state;
-    if (!s || !s.window || (s.phase !== "scene" && s.phase !== "combat"))
-      return;
+    if (!s || !s.window || (s.phase !== 'scene' && s.phase !== 'combat')) return;
     const wait = Math.max(0, s.window.endsAt - deps.now());
     timer = deps.setTimer(() => {
       timer = null;
-      void queue.push({ type: "tick", at: deps.now() });
+      void queue.push({ type: 'tick', at: deps.now() });
     }, wait);
   }
 
   const queue = createQueue<Command>(
     async (cmd) => {
       const before = state;
-      if (!before) throw new Error("session not started");
+      if (!before) throw new Error('session not started');
       try {
         const result = apply(before, cmd, createRng(before.rng), pack);
         state = result.state;
@@ -64,21 +58,17 @@ export function createSession(opts: SessionOptions): Session {
         await store.snapshot(state, deps.now());
         if (
           result.events.some(
-            (e) =>
-              e.type === "rewards" ||
-              e.type === "seat-released" ||
-              e.type === "stopped",
+            (e) => e.type === 'rewards' || e.type === 'seat-released' || e.type === 'stopped'
           )
         ) {
           await store.saveViewers(state.viewers);
         }
-        for (const line of chatLines(result.events, state, pack))
-          await send(line);
+        for (const line of chatLines(result.events, state, pack)) await send(line);
       } finally {
         arm();
       }
     },
-    (level, message, fields) => deps.log(level, message, fields),
+    (level, message, fields) => deps.log(level, message, fields)
   );
 
   function fresh(msg: ChatMessage): boolean {
@@ -110,7 +100,7 @@ export function createSession(opts: SessionOptions): Session {
     },
 
     host(action, target) {
-      const cmd: Command = { type: "host", at: deps.now(), action };
+      const cmd: Command = { type: 'host', at: deps.now(), action };
       if (target !== undefined) cmd.target = target;
       return queue.push(cmd);
     },

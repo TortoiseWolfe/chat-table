@@ -1,0 +1,230 @@
+[
+  {
+    "id": "kestrel",
+    "name": "Kestrel",
+    "pronouns": "they/them",
+    "concept": "pilot",
+    "attributes": {
+      "reflexes": "3D",
+      "coordination": "4D",
+      "physique": "2D",
+      "knowledge": "3D",
+      "perception": "3D",
+      "presence": "3D"
+    },
+    "skills": [
+      {
+        "name": "piloting",
+        "attribute": "coordination",
+        "code": "6D"
+      },
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "5D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "4D"
+      },
+      {
+        "name": "search",
+        "attribute": "perception",
+        "code": "4D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pulse-pistol",
+        "name": "Pulse pistol",
+        "skill": "marksmanship",
+        "damage": "4D",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "pilot"
+      ],
+      "combat": "attack-weakest",
+      "spendCp": "when-out-of-options"
+    }
+  },
+  {
+    "id": "marrow",
+    "name": "Marrow",
+    "pronouns": "they/them",
+    "concept": "mechanic",
+    "attributes": {
+      "reflexes": "2D",
+      "coordination": "3D",
+      "physique": "4D",
+      "knowledge": "4D",
+      "perception": "2D",
+      "presence": "3D"
+    },
+    "skills": [
+      {
+        "name": "repair",
+        "attribute": "knowledge",
+        "code": "6D"
+      },
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "4D"
+      },
+      {
+        "name": "brawling",
+        "attribute": "physique",
+        "code": "5D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "3D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "rivet-gun",
+        "name": "Rivet gun",
+        "skill": "marksmanship",
+        "damage": "3D+1",
+        "range": "easy"
+      }
+    ],
+    "armor": "1D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "cycle"
+      ],
+      "combat": "attack-first",
+      "spendCp": "never"
+    }
+  },
+  {
+    "id": "sable",
+    "name": "Sable",
+    "pronouns": "they/them",
+    "concept": "scout",
+    "attributes": {
+      "reflexes": "3D",
+      "coordination": "3D",
+      "physique": "3D",
+      "knowledge": "2D",
+      "perception": "4D",
+      "presence": "3D"
+    },
+    "skills": [
+      {
+        "name": "sneak",
+        "attribute": "perception",
+        "code": "6D"
+      },
+      {
+        "name": "search",
+        "attribute": "perception",
+        "code": "5D"
+      },
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "4D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "4D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pulse-pistol",
+        "name": "Pulse pistol",
+        "skill": "marksmanship",
+        "damage": "4D",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "vent"
+      ],
+      "combat": "attack-strongest",
+      "spendCp": "on-checks"
+    }
+  },
+  {
+    "id": "juniper",
+    "name": "Juniper",
+    "pronouns": "they/them",
+    "concept": "repair automaton",
+    "attributes": {
+      "reflexes": "3D",
+      "coordination": "3D",
+      "physique": "4D",
+      "knowledge": "3D",
+      "perception": "2D",
+      "presence": "3D"
+    },
+    "skills": [
+      {
+        "name": "brawling",
+        "attribute": "physique",
+        "code": "5D"
+      },
+      {
+        "name": "repair",
+        "attribute": "knowledge",
+        "code": "5D"
+      },
+      {
+        "name": "dodge",
+        "attribute": "reflexes",
+        "code": "4D"
+      },
+      {
+        "name": "persuasion",
+        "attribute": "presence",
+        "code": "4D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "stun-baton",
+        "name": "Stun baton",
+        "skill": "brawling",
+        "damage": "3D",
+        "range": "very-easy"
+      }
+    ],
+    "armor": "1D",
+    "points": {
+      "cp": 5,
+      "fp": 1
+    },
+    "bot": {
+      "prefer": [
+        "scan"
+      ],
+      "combat": "dodge",
+      "spendCp": "never"
+    }
+  }
+]

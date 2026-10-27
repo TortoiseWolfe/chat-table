@@ -1,0 +1,69 @@
+[
+  {
+    "id": "scrapper",
+    "name": "Scrapper",
+    "attributes": {
+      "reflexes": "2D",
+      "coordination": "2D",
+      "physique": "2D",
+      "knowledge": "2D",
+      "perception": "2D",
+      "presence": "2D"
+    },
+    "skills": [
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "3D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "rivet-gun",
+        "name": "Rivet gun",
+        "skill": "marksmanship",
+        "damage": "3D+1",
+        "range": "easy"
+      }
+    ],
+    "armor": "0D",
+    "outAt": "wounded",
+    "tactic": "attack-weakest"
+  },
+  {
+    "id": "warden",
+    "name": "Warden",
+    "attributes": {
+      "reflexes": "3D",
+      "coordination": "3D",
+      "physique": "3D",
+      "knowledge": "3D",
+      "perception": "3D",
+      "presence": "3D"
+    },
+    "skills": [
+      {
+        "name": "marksmanship",
+        "attribute": "coordination",
+        "code": "4D+1"
+      },
+      {
+        "name": "brawling",
+        "attribute": "physique",
+        "code": "4D"
+      }
+    ],
+    "weapons": [
+      {
+        "id": "pulse-pistol",
+        "name": "Pulse pistol",
+        "skill": "marksmanship",
+        "damage": "4D",
+        "range": "easy"
+      }
+    ],
+    "armor": "1D",
+    "outAt": "incapacitated",
+    "tactic": "attack-first"
+  }
+]

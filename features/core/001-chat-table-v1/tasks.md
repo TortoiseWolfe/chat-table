@@ -749,7 +749,7 @@ green. Frontier runs come with T061.
 
 ## Phase 2e: User Story 7 (P1), the Frontier pack and the rules doc
 
-- [ ] T060 [US7] `src/guard/normalise.ts`, `src/guard/scan.ts`, `src/guard/cli.ts`, a TypeScript port
+- [x] T060 [US7] `src/guard/normalise.ts`, `src/guard/scan.ts`, `src/guard/cli.ts`, a TypeScript port
   of `scripts/guard.py` per docs/content-guard.md: `normalise(text)`; `windows(words, 3)`;
   `scanText(path, text, hashes, opts)` -> `{ path, line, kind: 'denylist' | 'compat' }[]`;
   `shouldSkip(relPath, { all })`: `.git`, `dist`, `out`, `packs-private`, `guard/denylist.sha256`
@@ -766,7 +766,7 @@ green. Frontier runs come with T061.
   is `OGL.md`; the hit output contains no planted word; `shouldSkip('node_modules/x.js', { all:
   false })` -> `true`, with `all: true` -> `false`; `shouldSkip('.git/HEAD', { all: true })` ->
   `true`.
-- [ ] T061 [US7] `packs/frontier/`: an original mining-frontier space setting, five files valid
+- [x] T061 [US7] `packs/frontier/`: an original mining-frontier space setting, five files valid
   under T033, plus `ASSETS.md`. Never a name, word or item borrowed from a franchise (weapons and
   gear included): the names below are the ones to use.
   - `pack.json`: `id: "frontier"`, `name: "Frontier"`, `version: "1.0.0"`, `licence: "MIT"`,
@@ -812,7 +812,7 @@ green. Frontier runs come with T061.
   scenes; seed 42, no script, reaches `ended` (any ending) and a second run gives a byte-identical
   `log` (SC-001, US1 scenarios 1-2); seeds 1..20 each reach `ended` with no throw; the T054 script
   with `5 viewer1 !join kestrel` reaches `ended` with two `rewards` events. `npm run guard` green.
-- [ ] T062 [P] [US7] `docs/rules.md`: the rules as chat-table implements them, in our own words (dice
+- [x] T062 [P] [US7] `docs/rules.md`: the rules as chat-table implements them, in our own words (dice
   codes, the special die, the 1-rule options, difficulties, opposed checks, wounds and stacking,
   Character and Fate Points, initiative, multiple actions), marked as Open Game Content per
   OGL.md "Product Identification". The special die is named once, from `SPECIAL_DIE_NAME`'s value,

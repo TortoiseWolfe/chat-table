@@ -1,0 +1,41 @@
+{
+  "id": "frontier",
+  "name": "Frontier",
+  "version": "1.0.0",
+  "licence": "MIT",
+  "skills": [
+    {
+      "name": "marksmanship",
+      "attribute": "coordination"
+    },
+    {
+      "name": "brawling",
+      "attribute": "physique"
+    },
+    {
+      "name": "dodge",
+      "attribute": "reflexes"
+    },
+    {
+      "name": "sneak",
+      "attribute": "perception"
+    },
+    {
+      "name": "piloting",
+      "attribute": "coordination"
+    },
+    {
+      "name": "repair",
+      "attribute": "knowledge"
+    },
+    {
+      "name": "persuasion",
+      "attribute": "presence"
+    },
+    {
+      "name": "search",
+      "attribute": "perception"
+    }
+  ],
+  "assets": {}
+}
