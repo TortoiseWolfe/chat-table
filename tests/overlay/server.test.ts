@@ -24,7 +24,10 @@ afterEach(() => {
   server?.close();
 });
 
-async function boot(assets: Record<string, string> = { dock: 'maps/dock.png' }) {
+async function boot(
+  assets: Record<string, string> = { dock: 'maps/dock.png' },
+  getSeats?: () => import('../../src/overlay/view.js').SeatGauge[]
+) {
   const pack = tinyPack();
   pack.assets.map = assets;
   const table = createTable({ pack, seed: 3 });
@@ -35,6 +38,7 @@ async function boot(assets: Record<string, string> = { dock: 'maps/dock.png' }) 
     publicDir: '/pub',
     files,
     getState: () => table.state(),
+    ...(getSeats ? { getSeats } : {}),
     deps: {
       setTimer: (fn, ms) => setTimeout(fn, ms),
       clearTimer: (id) => clearTimeout(id as never),
@@ -110,6 +114,39 @@ describe('overlay server', () => {
     await until('"seq":' + String(lines[1]?.seq));
     expect(count).toBeGreaterThanOrEqual(1);
     expect((buf.match(/event: event/g) ?? []).length).toBe(2);
+    await reader.cancel();
+  });
+
+  it('mark pushes a fresh snapshot with the seat gauges and the last three swap marks', async () => {
+    const gauge = {
+      seat: 1,
+      label: 'Gem',
+      driver: 'gemini',
+      model: 'm',
+      onBackup: false,
+      tokens: 5,
+      tokenCap: 100,
+      calls: 1,
+      swaps: 0,
+    };
+    const { base, overlay } = await boot(undefined, () => [gauge]);
+    const res = await fetch(`${base}/overlay/events`);
+    const reader = res.body?.getReader();
+    if (!reader) throw new Error('no body');
+    const dec = new TextDecoder();
+    let buf = '';
+    const until = async (needle: string): Promise<void> => {
+      while (!buf.includes(needle)) {
+        const { value, done } = await reader.read();
+        if (done) throw new Error('stream ended');
+        buf += dec.decode(value);
+      }
+    };
+    await until('\n\n');
+    for (const t of ['one', 'two', 'three', 'four']) overlay.mark(t);
+    await until('"marks":["two","three","four"]');
+    expect(buf).toContain('"driver":"gemini"');
+    expect(buf).toContain('"tokenCap":100');
     await reader.cancel();
   });
 });

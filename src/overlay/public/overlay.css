@@ -95,3 +95,31 @@ body {
 #feed li {
   margin-bottom: 8px;
 }
+
+.driver {
+  font-size: 18px;
+  color: #b9c3d6;
+}
+.driver.backup {
+  color: #ffd166;
+}
+.gauge {
+  height: 8px;
+  margin-top: 2px;
+  background: #3a3f4a;
+}
+.gauge span {
+  display: block;
+  height: 100%;
+  background: #5aa9e6;
+}
+.gauge span.high {
+  background: #d9533f;
+}
+#marks {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+  font-size: 20px;
+  color: #ffd166;
+}

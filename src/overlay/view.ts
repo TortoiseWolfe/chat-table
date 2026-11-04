@@ -1,10 +1,30 @@
 import type { Event } from '../engine/events.js';
 import type { Pack } from '../engine/pack.js';
-import type { GameState } from '../engine/state.js';
+import { holderName, type GameState } from '../engine/state.js';
 import { WOUND_ORDER, type WoundLevel } from '../engine/tables.js';
 import { specialDieName } from '../engine/terms.js';
 import type { LogLine } from '../runtime/log.js';
 import { chatItems } from '../runtime/replies.js';
+
+/** What the table shows about one AI-run seat: who is playing it and how much it has spent. */
+export interface SeatGauge {
+  seat: number;
+  label: string;
+  /** `human` while a person holds the seat. */
+  driver: string;
+  model: string;
+  onBackup: boolean;
+  tokens: number;
+  tokenCap: number;
+  calls: number;
+  swaps: number;
+}
+
+export interface ViewExtras {
+  seats: SeatGauge[];
+  /** Swap marks, newest last. */
+  marks: string[];
+}
 
 export interface OverlayView {
   scene: { id: string; map: string | null };
@@ -35,6 +55,8 @@ export interface OverlayView {
     success: boolean | null;
   } | null;
   specialDieName: string;
+  seats: SeatGauge[];
+  marks: string[];
 }
 
 const FEED_LINES = 8;
@@ -53,7 +75,12 @@ function asEvent(line: LogLine): Event {
   return Object.fromEntries(fields) as unknown as Event;
 }
 
-export function toView(state: GameState, pack: Pack, recent: LogLine[]): OverlayView {
+export function toView(
+  state: GameState,
+  pack: Pack,
+  recent: LogLine[],
+  extras: ViewExtras = { seats: [], marks: [] }
+): OverlayView {
   const scene = pack.adventure.scenes.find((s) => s.id === state.sceneId);
   const nameOf = (who: string): string => {
     const m = /^seat:(\d+)$/.exec(who);
@@ -65,7 +92,7 @@ export function toView(state: GameState, pack: Pack, recent: LogLine[]): Overlay
     who: `seat:${String(seat.index)}`,
     name: seat.character.name,
     art: assetUrl('art', pack, seat.character.id),
-    holder: seat.holder.kind === 'bot' ? 'bot' : seat.holder.login,
+    holder: holderName(seat.holder),
     wound: seat.character.wound,
     woundIndex: woundIndex(seat.character.wound),
     out: woundIndex(seat.character.wound) >= woundIndex(SEAT_OUT_AT),
@@ -137,5 +164,7 @@ export function toView(state: GameState, pack: Pack, recent: LogLine[]): Overlay
     feed: feed.slice(-FEED_LINES),
     dice,
     specialDieName: specialDieName(pack),
+    seats: extras.seats.map((g) => ({ ...g })),
+    marks: [...extras.marks],
   };
 }

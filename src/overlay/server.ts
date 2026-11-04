@@ -3,10 +3,12 @@ import type { Pack } from '../engine/pack.js';
 import type { GameState } from '../engine/state.js';
 import type { Deps } from '../runtime/deps.js';
 import type { LogLine } from '../runtime/log.js';
-import { toView } from './view.js';
+import { toView, type SeatGauge, type ViewExtras } from './view.js';
 
 const PING_MS = 15000;
 const KEEP_LINES = 50;
+const KEEP_MARKS = 3;
+const MARK_CHARS = 120;
 
 export interface FileReader {
   /** The file's bytes, or null when it does not exist. */
@@ -21,6 +23,8 @@ export interface OverlayOptions {
   publicDir: string;
   files: FileReader;
   getState: () => GameState | null;
+  /** The AI seats' drivers and token gauges; absent when no seat is AI-run. */
+  getSeats?: () => SeatGauge[];
   deps: Pick<Deps, 'setTimer' | 'clearTimer'>;
 }
 
@@ -29,6 +33,10 @@ export interface Overlay {
   handle(req: IncomingMessage, res: ServerResponse): boolean;
   /** Call after each applied command with the new log lines and the state. */
   publish(lines: LogLine[], state: GameState): void;
+  /** Pushes the current view again, for a change that is not a log line (a swap, a token count). */
+  refresh(): void;
+  /** Marks a driver swap on the table; the mark stays for the next few swaps. */
+  mark(text: string): void;
   close(): void;
 }
 
@@ -58,6 +66,8 @@ function safeRelative(p: string): boolean {
 export function createOverlay(opts: OverlayOptions): Overlay {
   const { pack, packDir, publicDir, files, getState, deps } = opts;
   const recent: LogLine[] = [];
+  const marks: string[] = [];
+  const extras = (): ViewExtras => ({ seats: opts.getSeats?.() ?? [], marks });
   const clients = new Set<{ res: ServerResponse; timer: unknown }>();
 
   const send = (res: ServerResponse, event: string, data: unknown): void => {
@@ -85,7 +95,7 @@ export function createOverlay(opts: OverlayOptions): Overlay {
       connection: 'keep-alive',
     });
     const state = getState();
-    if (state) send(res, 'snapshot', { view: toView(state, pack, recent) });
+    if (state) send(res, 'snapshot', { view: toView(state, pack, recent, extras()) });
     else res.write(': waiting\n\n');
     const client = { res, timer: null as unknown };
     const ping = (): void => {
@@ -136,9 +146,22 @@ export function createOverlay(opts: OverlayOptions): Overlay {
       recent.push(...lines);
       if (recent.length > KEEP_LINES) recent.splice(0, recent.length - KEEP_LINES);
       for (const line of lines) {
-        const view = toView(state, pack, recent);
+        const view = toView(state, pack, recent, extras());
         for (const c of clients) send(c.res, 'event', { line, view });
       }
+    },
+
+    refresh() {
+      const state = getState();
+      if (!state) return;
+      const view = toView(state, pack, recent, extras());
+      for (const c of clients) send(c.res, 'snapshot', { view });
+    },
+
+    mark(text) {
+      marks.push(text.slice(0, MARK_CHARS));
+      if (marks.length > KEEP_MARKS) marks.splice(0, marks.length - KEEP_MARKS);
+      this.refresh();
     },
 
     close() {

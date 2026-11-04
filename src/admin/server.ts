@@ -1,8 +1,10 @@
 import { timingSafeEqual } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 import type { AdminAction } from '../engine/commands.js';
-import type { GameState } from '../engine/state.js';
+import { holderName, type GameState } from '../engine/state.js';
+import type { DriverId } from '../ai/types.js';
 import type { FileReader } from '../overlay/server.js';
+import type { SeatGauge } from '../overlay/view.js';
 
 const MAX_BODY = 4096;
 
@@ -16,6 +18,11 @@ export interface AdminOptions {
   key: string;
   publicDir: string;
   files: FileReader;
+  /** The AI seat runner, when seats are AI-run: lets the host see drivers and swap one. */
+  ai?: {
+    swap(seat: number, to: DriverId): Promise<boolean>;
+    panel(): SeatGauge[];
+  };
 }
 
 export interface Admin {
@@ -24,6 +31,7 @@ export interface Admin {
 }
 
 const ACTIONS = ['start', 'pause', 'stop', 'skip'] as const;
+const DRIVER_IDS: readonly DriverId[] = ['bot', 'claude', 'gemini', 'groq'];
 
 function json(res: ServerResponse, status: number, body: unknown): void {
   res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' });
@@ -67,19 +75,36 @@ export function createAdmin(opts: AdminOptions): Admin {
         seats: s.seats.map((seat) => ({
           index: seat.index,
           character: seat.character.name,
-          holder: seat.holder.kind === 'bot' ? 'bot' : seat.holder.login,
+          holder: holderName(seat.holder),
         })),
         waitlist: s.waitlist.map((w) => w.login),
+        ...(opts.ai ? { drivers: opts.ai.panel() } : {}),
       });
     }
     const action = ACTIONS.find((a) => a === name);
-    if (action === undefined && name !== 'kick') return json(res, 404, {});
+    if (action === undefined && name !== 'kick' && !(name === 'swap' && opts.ai)) {
+      return json(res, 404, {});
+    }
     if (req.method !== 'POST') return json(res, 405, {});
     const raw = await readBody(req);
     if (raw === null) return json(res, 413, {});
     if (action !== undefined) {
       await session.host(action);
       return json(res, 202, {});
+    }
+    if (name === 'swap' && opts.ai) {
+      let body: { seat?: unknown; to?: unknown };
+      try {
+        body = JSON.parse(raw || '{}') as { seat?: unknown; to?: unknown };
+      } catch {
+        return json(res, 400, {});
+      }
+      const to = DRIVER_IDS.find((d) => d === body.to);
+      if (typeof body.seat !== 'number' || !Number.isInteger(body.seat) || to === undefined) {
+        return json(res, 400, {});
+      }
+      const moved = await opts.ai.swap(body.seat, to);
+      return json(res, moved ? 202 : 409, {});
     }
     let login: unknown;
     try {

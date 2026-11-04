@@ -77,6 +77,32 @@ saves when the stream goes offline; **Start** resumes it. The image is also publ
 source instead. The full walk-through is in
 [features/core/001-chat-table-v1/quickstart.md](features/core/001-chat-table-v1/quickstart.md).
 
+## AI-driven seats
+
+A seat can be played by a model instead of a viewer. The seat keeps its character, points and history;
+the driver (bot, Claude, Gemini or Groq) is interchangeable, and each seat has a primary and a backup.
+Every turn a driver is handed the same short turn packet: its own character sheet, the scene text
+everyone read, and the choices on offer. It never sees another seat's private information, a rule
+table or the dice. Each seat has call and token caps (the Claude seat's are the tightest), and the
+token log (`ai-tokens.jsonl` in the data folder) lists driver, model, tokens in and out, latency and
+swaps. A human who leaves a seat hands it to the bot. The overlay shows each seat's driver and a token
+gauge, and marks swaps. The admin dock can swap a seat's driver (`POST /admin/api/swap`).
+
+1. Copy [docs/ai-seats.example.json](docs/ai-seats.example.json), edit the seats and the model ids
+   (check them against each vendor's model list), and mount your key files read-only into the
+   container at the paths the file names. A key never goes in a compose file, a commit or a log.
+2. For a game on your channel, set `AI_SEATS_FILE` (and optionally `AI_PACE_SECONDS`) in your env file.
+3. For a private run with no Twitch connection, use the live simulator. The pace holds each answer so
+   a game lasts about as long as `--max-minutes`:
+
+   ```sh
+   timeout 2400 docker compose run --rm -v "$KEYS_DIR:/keys:ro" app npm run sim -- --live \
+     --seats-file docs/ai-seats.example.json --declare 180 --pace 170 --max-minutes 30 \
+     --swap 2:groq:12 --stop-on-cap --data-dir /tmp/run
+   ```
+
+Design notes: [features/core/002-ai-seats/spec.md](features/core/002-ai-seats/spec.md).
+
 ## Licence
 
 Code: MIT ([LICENSE](LICENSE)). Rules text that is Open Game Content: Open Game License 1.0a, with the

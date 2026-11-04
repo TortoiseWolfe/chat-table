@@ -2,6 +2,9 @@ import { randomBytes } from 'node:crypto';
 import { appendFile, mkdir, open, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createAdmin } from './admin/server.js';
+import type { SeatRunner } from './ai/runner.js';
+import { createAiSeats } from './ai/setup.js';
+import type { DriverId } from './ai/types.js';
 import { createNarrator } from './narrator/narrator.js';
 import { createOverlay, type FileReader, type Overlay } from './overlay/server.js';
 import { loadPack } from './packs/load.js';
@@ -128,6 +131,7 @@ async function run(deps: Deps, env: Env, packDir: string): Promise<void> {
 
   // The overlay is built after the session, since the session publishes into it.
   let publish: Overlay['publish'] = () => undefined;
+  let ai: SeatRunner | null = null;
   const session = createSession({
     deps,
     pack,
@@ -144,7 +148,10 @@ async function run(deps: Deps, env: Env, packDir: string): Promise<void> {
     botUserId,
     channelId: broadcasterId,
     narrator,
-    onLog: (lines, state) => publish(lines, state),
+    onLog: (lines, state) => {
+      publish(lines, state);
+      ai?.onState(lines, state);
+    },
   });
 
   const overlay = createOverlay({
@@ -153,6 +160,7 @@ async function run(deps: Deps, env: Env, packDir: string): Promise<void> {
     publicDir: here('../src/overlay/public'),
     files,
     getState: () => session.state(),
+    getSeats: () => ai?.panel() ?? [],
     deps,
   });
   publish = (lines, state) => {
@@ -163,6 +171,15 @@ async function run(deps: Deps, env: Env, packDir: string): Promise<void> {
     key: adminKey,
     publicDir: here('../src/admin/public'),
     files,
+    ...(env.aiSeatsFile
+      ? {
+          ai: {
+            swap: (seat: number, to: DriverId) =>
+              ai ? ai.swap(seat, to, 'manual') : Promise.resolve(false),
+            panel: () => ai?.panel() ?? [],
+          },
+        }
+      : {}),
   });
 
   const server = createHttpServer([overlay, admin]);
@@ -182,6 +199,18 @@ async function run(deps: Deps, env: Env, packDir: string): Promise<void> {
   });
   adapter.start();
   await session.start();
+  if (env.aiSeatsFile) {
+    ai = await createAiSeats({
+      deps,
+      pack,
+      seatsFile: env.aiSeatsFile,
+      dataDir: env.dataDir,
+      session,
+      overlay,
+      paceMs: env.aiPaceMs,
+    });
+    await ai.start();
+  }
 
   const stop = (): void => {
     adapter.stop();

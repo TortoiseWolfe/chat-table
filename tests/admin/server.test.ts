@@ -18,7 +18,7 @@ afterEach(() => {
   server?.close();
 });
 
-async function boot() {
+async function boot(ai?: Parameters<typeof createAdmin>[0]['ai']) {
   const fs = memFs();
   const clock = new FakeClock(1793000000000);
   const deps: Deps = {
@@ -47,6 +47,7 @@ async function boot() {
   const admin = createAdmin({
     session,
     key: KEY,
+    ...(ai ? { ai } : {}),
     publicDir: '/pub',
     files: {
       read: (p) =>
@@ -130,5 +131,61 @@ describe('admin server', () => {
     expect((await call('/admin/api/nope', { method: 'POST' })).status).toBe(404);
     const big = JSON.stringify({ login: 'x'.repeat(5000) });
     expect((await call('/admin/api/kick', { method: 'POST', body: big })).status).toBe(413);
+  });
+
+  describe('swap', () => {
+    const gauge = {
+      seat: 1,
+      label: 'g',
+      driver: 'gemini',
+      model: 'm',
+      onBackup: false,
+      tokens: 0,
+      tokenCap: 1,
+      calls: 0,
+      swaps: 0,
+    };
+    const rig = () => {
+      const asked: [number, string][] = [];
+      const ai = {
+        swap: (seat: number, to: string) => {
+          asked.push([seat, to]);
+          return Promise.resolve(to === 'groq');
+        },
+        panel: () => [gauge],
+      };
+      return { ai: ai as NonNullable<Parameters<typeof createAdmin>[0]['ai']>, asked };
+    };
+
+    it('needs the key, takes a seat and a driver, and says 409 when nothing moved', async () => {
+      const { ai, asked } = rig();
+      const { call } = await boot(ai);
+      const body = (o: unknown) => JSON.stringify(o);
+      expect((await call('/admin/api/swap', { method: 'POST', key: null, body: body({}) })).status).toBe(401);
+      expect((await call('/admin/api/swap', { method: 'POST', body: body({ seat: 1, to: 'groq' }) })).status).toBe(202);
+      expect((await call('/admin/api/swap', { method: 'POST', body: body({ seat: 1, to: 'gemini' }) })).status).toBe(409);
+      expect(asked).toEqual([[1, 'groq'], [1, 'gemini']]);
+    });
+
+    it('400 for a bad body, an unknown driver or a seat that is not a whole number', async () => {
+      const { ai, asked } = rig();
+      const { call } = await boot(ai);
+      for (const b of ['not json', '{}', '{"seat":1}', '{"seat":"1","to":"groq"}', '{"seat":1.5,"to":"groq"}', '{"seat":1,"to":"nope"}']) {
+        expect((await call('/admin/api/swap', { method: 'POST', body: b })).status).toBe(400);
+      }
+      expect(asked).toEqual([]);
+    });
+
+    it('is a 404 when no seat is AI-run, and the state lists the drivers when they are', async () => {
+      const plain = await boot();
+      expect((await plain.call('/admin/api/swap', { method: 'POST', body: '{}' })).status).toBe(404);
+      expect(((await (await plain.call('/admin/api/state')).json()) as Record<string, unknown>)['drivers']).toBeUndefined();
+      server?.closeAllConnections();
+      server?.close();
+      const { ai } = rig();
+      const withAi = await boot(ai);
+      const state = (await (await withAi.call('/admin/api/state')).json()) as { drivers: unknown[] };
+      expect(state.drivers).toHaveLength(1);
+    });
   });
 });

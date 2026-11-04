@@ -1,7 +1,7 @@
 import { formatDiceCode } from '../engine/dice.js';
 import type { Event } from '../engine/events.js';
 import type { Attribute, Pack } from '../engine/pack.js';
-import type { GameState } from '../engine/state.js';
+import { holderName, type GameState } from '../engine/state.js';
 import { specialDieName } from '../engine/terms.js';
 import { fillTemplate } from '../gm/scene.js';
 import { freeCharacters, seatOf } from '../seats/seats.js';
@@ -134,7 +134,7 @@ function lineFor(events: Event[], i: number, s: GameState, pack: Pack): string |
           const seats = s.seats
             .map(
               (seat) =>
-                `${seat.character.name} (${seat.holder.kind === 'viewer' ? seat.holder.login : 'bot'})`
+                `${seat.character.name} (${holderName(seat.holder)})`
             )
             .join(', ');
           return `Scene: ${s.sceneId ?? 'none'}, round ${s.round}/${pack.adventure.roundLimit}. Seats: ${seats}. In line: ${s.waitlist.length}.`;

@@ -18,5 +18,15 @@ export type Command =
   | { type: 'query'; at: number; actor: Actor; what: 'sheet' | 'status' | 'characters' | 'help' }
   | { type: 'admin'; at: number; actor: Actor; action: AdminAction; target?: string }
   | { type: 'host'; at: number; action: AdminAction; target?: string }
+  | {
+      type: 'ai-declare';
+      at: number;
+      seat: number;
+      option: number;
+      cp: number;
+      fp: boolean;
+      quote?: string;
+    }
+  | { type: 'assign'; at: number; seat: number; holder: 'ai' | 'bot'; label?: string }
   | { type: 'tick'; at: number }
   | { type: 'offline'; at: number };
