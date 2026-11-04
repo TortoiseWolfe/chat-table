@@ -5,7 +5,13 @@ import type { Character, Npc, Pack } from './pack.js';
 
 export type Holder =
   | { kind: 'bot' }
+  | { kind: 'ai'; label: string }
   | { kind: 'viewer'; userId: string; login: string; activeFromRound: number };
+
+/** What a viewer sees for who plays a seat: 'bot', the AI's label, or the viewer's login. */
+export function holderName(h: Holder): string {
+  return h.kind === 'bot' ? 'bot' : h.kind === 'ai' ? h.label : h.login;
+}
 
 export interface Seat {
   index: 0 | 1 | 2 | 3;

@@ -4,6 +4,7 @@ import { parseEnv } from '../../src/runtime/deps.js';
 describe('parseEnv', () => {
   it('gives the defaults in sim mode', () => {
     expect(parseEnv({}, 'sim')).toEqual({
+      aiPaceMs: 0,
       dataDir: '/data',
       pack: '/app/packs/frontier',
       httpPort: 8787,

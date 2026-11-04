@@ -1,0 +1,27 @@
+{
+  "keyFiles": {
+    "claude": "/keys/claude",
+    "gemini": "/keys/gemini",
+    "groq": "/keys/groq"
+  },
+  "seats": [
+    {
+      "seat": 1,
+      "label": "Marrow (Claude)",
+      "primary": { "id": "claude", "model": "claude-haiku-5-5" },
+      "backup": { "id": "bot" }
+    },
+    {
+      "seat": 2,
+      "label": "Sable (Gemini)",
+      "primary": { "id": "gemini", "model": "gemini-3.8-flash" },
+      "backup": { "id": "groq", "model": "openai/gpt-oss-120b" }
+    },
+    {
+      "seat": 3,
+      "label": "Juniper (H-7CH stand-in)",
+      "primary": { "id": "bot" },
+      "backup": { "id": "bot" }
+    }
+  ]
+}

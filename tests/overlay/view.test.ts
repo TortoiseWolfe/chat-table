@@ -94,4 +94,25 @@ describe('toView', () => {
     expect(v.dice).toBeNull();
     expect(v.feed).toEqual([]);
   });
+
+  it('carries the seat gauges and swap marks it is given, and none by default', () => {
+    const { pack, table, recent } = play('combat');
+    expect(toView(table.state(), pack, recent).seats).toEqual([]);
+    expect(toView(table.state(), pack, recent).marks).toEqual([]);
+    const gauge = {
+      seat: 0,
+      label: 'Claude',
+      driver: 'claude',
+      model: 'm',
+      onBackup: false,
+      tokens: 10,
+      tokenCap: 100,
+      calls: 1,
+      swaps: 2,
+    };
+    const v = toView(table.state(), pack, recent, { seats: [gauge], marks: ['A: x to y (manual)'] });
+    expect(v.seats).toEqual([gauge]);
+    expect(v.seats[0]).not.toBe(gauge);
+    expect(v.marks).toEqual(['A: x to y (manual)']);
+  });
 });

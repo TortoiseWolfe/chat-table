@@ -20,7 +20,7 @@ export type Event =
   | { type: 'stopped' }
   | { type: 'scene-entered'; sceneId: string }
   | { type: 'window-opened'; round: number; endsAt: number; options: Option[] }
-  | { type: 'declared'; seat: number; by: 'bot' | 'viewer'; option: number }
+  | { type: 'declared'; seat: number; by: 'bot' | 'viewer' | 'ai'; option: number }
   | { type: 'vote'; sceneId: string; tally: Record<number, number>; winner: number }
   | {
       type: 'roll';
@@ -63,6 +63,7 @@ export type Event =
       login: string;
       reason: 'leave' | 'missed' | 'kick';
     }
+  | { type: 'seat-assigned'; seat: number; holder: 'ai' | 'bot'; label: string }
   | { type: 'waitlisted'; userId: string; login: string; position: number; character?: string }
   | { type: 'unwaitlisted'; userId: string }
   | { type: 'missed'; seat: number; userId: string; login: string; count: number }

@@ -164,8 +164,50 @@ function say(ctx: GmCtx, actor: Actor, text: string): void {
   ctx.s.quotes[seat.index] = text;
 }
 
+const AI_QUOTE_MAX = 140;
+
+/** A driver's declaration for an `ai` seat: no viewer cooldown, same checks as a viewer's picks. */
+function aiDeclare(ctx: GmCtx, cmd: Extract<Command, { type: 'ai-declare' }>): void {
+  const { s } = ctx;
+  if (!isPlaying(ctx)) {
+    ctx.emit({ type: 'ignored', reason: 'paused' });
+    return;
+  }
+  const seat = s.seats[cmd.seat];
+  if (!seat || seat.holder.kind !== 'ai') return;
+  if (!s.window || !s.window.options.some((o) => o.n === cmd.option)) {
+    ctx.emit({ type: 'ignored', reason: 'stale' });
+    return;
+  }
+  const points = seat.character.points;
+  const cp = Number.isInteger(cmd.cp)
+    ? Math.max(0, Math.min(cmd.cp, s.settings.cpPerRollMax, points.cp))
+    : 0;
+  const fp = cmd.fp && cp === 0 && points.fp >= 1;
+  s.declarations[seat.index] = { kind: 'pick', option: cmd.option, cp, fp };
+  if (cmd.quote !== undefined && cmd.quote.trim() !== '') {
+    s.quotes[seat.index] = cmd.quote.trim().slice(0, AI_QUOTE_MAX);
+  }
+  ctx.emit({ type: 'declared', seat: seat.index, by: 'ai', option: cmd.option });
+}
+
+/** The runtime hands a seat to an AI driver, or back to the bot. A viewer's seat is never taken. */
+function assign(ctx: GmCtx, cmd: Extract<Command, { type: 'assign' }>): void {
+  const seat = ctx.s.seats[cmd.seat];
+  if (!seat || seat.holder.kind === 'viewer') return;
+  const label = cmd.label ?? '';
+  seat.holder = cmd.holder === 'ai' ? { kind: 'ai', label } : { kind: 'bot' };
+  ctx.emit({ type: 'seat-assigned', seat: seat.index, holder: cmd.holder, label });
+}
+
 export function handleChat(ctx: GmCtx, cmd: Command): void {
   switch (cmd.type) {
+    case 'ai-declare':
+      aiDeclare(ctx, cmd);
+      return;
+    case 'assign':
+      assign(ctx, cmd);
+      return;
     case 'join':
       join(ctx, cmd.actor, cmd.character);
       return;

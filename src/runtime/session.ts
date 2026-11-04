@@ -32,6 +32,8 @@ export interface Session {
   start(): Promise<void>;
   chat(msg: ChatMessage): Promise<void>;
   host(action: AdminAction, target?: string): Promise<void>;
+  /** A command from the runtime itself (an AI seat's declaration, a seat assignment). */
+  command(cmd: Command): Promise<void>;
   /** The stream went offline: the game pauses and saves. */
   offline(): Promise<void>;
   idle(): Promise<void>;
@@ -147,6 +149,10 @@ export function createSession(opts: SessionOptions): Session {
     host(action, target) {
       const cmd: Command = { type: 'host', at: deps.now(), action };
       if (target !== undefined) cmd.target = target;
+      return queue.push(cmd);
+    },
+
+    command(cmd) {
       return queue.push(cmd);
     },
 

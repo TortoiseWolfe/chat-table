@@ -29,6 +29,10 @@ export interface Env {
   specialOne: SpecialOneRule;
   cpPerRollMax: number;
   narratorTimeoutMs: number;
+  /** Path of the AI seats file; unset means every seat is a viewer's or the bot's. */
+  aiSeatsFile?: string;
+  /** Seconds each AI answer is held back; 0 in live play (dry runs set it). */
+  aiPaceMs: number;
   narratorUrl?: string;
   narratorModel?: string;
   narratorApiKey?: string;
@@ -72,7 +76,10 @@ export function parseEnv(env: Record<string, string | undefined>, mode: 'twitch'
     specialOne,
     cpPerRollMax: intOf(env, 'CP_PER_ROLL_MAX', 2, 0),
     narratorTimeoutMs: intOf(env, 'NARRATOR_TIMEOUT_MS', 8000, 1),
+    aiPaceMs: intOf(env, 'AI_PACE_SECONDS', 0, 0) * 1000,
   };
+  const aiSeatsFile = env['AI_SEATS_FILE'];
+  if (aiSeatsFile) out.aiSeatsFile = aiSeatsFile;
   const narratorUrl = env['NARRATOR_URL'];
   if (narratorUrl) out.narratorUrl = narratorUrl;
   const narratorModel = env['NARRATOR_MODEL'];

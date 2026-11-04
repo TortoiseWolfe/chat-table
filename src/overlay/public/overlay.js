@@ -6,6 +6,24 @@ function text(el, value) {
   el.textContent = value;
 }
 
+function seatInfo(g) {
+  const info = document.createElement('div');
+  info.className = g.onBackup ? 'driver backup' : 'driver';
+  const who = g.driver === 'human' ? 'person' : g.driver === 'bot' ? 'autopilot' : `${g.driver} ${g.model}`;
+  text(info, who);
+  const meter = document.createElement('div');
+  meter.className = 'gauge';
+  meter.title = `${g.tokens} of ${g.tokenCap} tokens, ${g.calls} calls, ${g.swaps} swaps`;
+  const fill = document.createElement('span');
+  const share = g.tokenCap > 0 ? Math.min(1, g.tokens / g.tokenCap) : 0;
+  fill.style.width = `${Math.round(share * 100)}%`;
+  if (share >= 0.8) fill.className = 'high';
+  meter.append(fill);
+  const wrap = document.createElement('div');
+  wrap.append(info, meter);
+  return wrap;
+}
+
 function render() {
   if (!view) return;
   const map = $('map');
@@ -22,6 +40,7 @@ function render() {
     img.alt = t.name;
     const name = document.createElement('div');
     text(name, t.holder === 'bot' ? t.name : `${t.name} (${t.holder})`);
+    const gauge = (view.seats || []).find((g) => `seat:${g.seat}` === t.who);
     const bar = document.createElement('div');
     bar.className = 'bar';
     bar.title = t.wound;
@@ -31,6 +50,7 @@ function render() {
       bar.append(cell);
     }
     box.append(img, name, bar);
+    if (gauge) box.append(seatInfo(gauge));
     tokens.append(box);
   }
 
@@ -49,6 +69,14 @@ function render() {
     const li = document.createElement('li');
     text(li, f.text);
     feed.append(li);
+  }
+
+  const marks = $('marks');
+  marks.replaceChildren();
+  for (const m of view.marks || []) {
+    const li = document.createElement('li');
+    text(li, `Swap: ${m}`);
+    marks.append(li);
   }
 
   const dice = $('dice');

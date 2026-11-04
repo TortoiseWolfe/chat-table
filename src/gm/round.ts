@@ -45,7 +45,10 @@ export function openWindow(ctx: GmCtx, options: Option[]): void {
   s.declarations = {};
   ctx.emit({ type: 'window-opened', round: s.round, endsAt: s.window.endsAt, options });
   for (const seat of standingSeats(s)) {
-    if (seat.holder.kind === 'bot' || seat.holder.activeFromRound > s.round) {
+    if (
+      seat.holder.kind === 'bot' ||
+      (seat.holder.kind === 'viewer' && seat.holder.activeFromRound > s.round)
+    ) {
       const decl = botDeclaration(s, seat.index, ctx.pack);
       s.declarations[seat.index] = decl;
       ctx.emit({
@@ -63,7 +66,10 @@ export function windowShouldClose(s: GameState, at: number): boolean {
   if (!w) return false;
   if (at >= w.endsAt) return true;
   const allDeclared = standingSeats(s).every((seat) => s.declarations[seat.index] !== undefined);
-  return allDeclared && s.seats.some((seat) => activeViewer(seat, w.round));
+  return (
+    allDeclared &&
+    s.seats.some((seat) => activeViewer(seat, w.round) || seat.holder.kind === 'ai')
+  );
 }
 
 export function settleDeclarations(ctx: GmCtx): void {
