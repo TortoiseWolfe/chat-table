@@ -103,6 +103,16 @@ gauge, and marks swaps. The admin dock can swap a seat's driver (`POST /admin/ap
 
 Design notes: [features/core/002-ai-seats/spec.md](features/core/002-ai-seats/spec.md).
 
+## Private adventure module (game master only)
+
+You can keep notes from your own books in a folder **outside** this repo and have the game master
+read them. Copy [packs/module-template](packs/module-template) somewhere else, fill it in, and set
+`PRIVATE_MODULE_DIR` to the absolute path (mount it read-only in the container). With the variable
+unset nothing loads, and a path inside the repo is refused. The notes sit behind the same firewall as
+the rest of the secrets: they never reach a seat's packet, the narrator, the overlay, the chat or any
+file the game saves, and a test plays a whole game to prove it. Only the host-side `gmNotes()` of the
+session returns them. Never commit book text here, not even as a test sample.
+
 ## Licence
 
 Code: MIT ([LICENSE](LICENSE)). Rules text that is Open Game Content: Open Game License 1.0a, with the

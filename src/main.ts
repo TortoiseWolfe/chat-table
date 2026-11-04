@@ -8,6 +8,7 @@ import type { DriverId } from './ai/types.js';
 import { createNarrator } from './narrator/narrator.js';
 import { createOverlay, type FileReader, type Overlay } from './overlay/server.js';
 import { loadPack } from './packs/load.js';
+import { loadPrivateModule, privateModuleDir } from './packs/module.js';
 import { parseEnv, type Deps, type Env, type FsLike } from './runtime/deps.js';
 import { createHttpServer } from './runtime/http.js';
 import { createSession } from './runtime/session.js';
@@ -84,6 +85,15 @@ function need(value: string | undefined, name: string): string {
 async function run(deps: Deps, env: Env, packDir: string): Promise<void> {
   const clientId = need(env.twitchClientId, 'TWITCH_CLIENT_ID');
   const pack = await loadPack(packDir, deps.fs);
+  // Optional GM-only notes from a folder outside the repo; only the label is ever logged.
+  const moduleDir = privateModuleDir(process.env, here('..'));
+  const privateModule = moduleDir
+    ? await loadPrivateModule(moduleDir, deps.fs, {
+        scenes: new Set(pack.adventure.scenes.map((s) => s.id)),
+        npcs: new Set(pack.npcs.map((n) => n.id)),
+      })
+    : undefined;
+  if (privateModule) deps.log('info', 'private module loaded', { module: privateModule.label });
 
   const auth = createAuth({
     deps,
@@ -148,6 +158,7 @@ async function run(deps: Deps, env: Env, packDir: string): Promise<void> {
     botUserId,
     channelId: broadcasterId,
     narrator,
+    ...(privateModule ? { privateModule } : {}),
     onLog: (lines, state) => {
       publish(lines, state);
       ai?.onState(lines, state);

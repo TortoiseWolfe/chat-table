@@ -1,6 +1,7 @@
 import { apply, reopenWindow } from '../engine/apply.js';
 import type { AdminAction, Command } from '../engine/commands.js';
 import type { Pack } from '../engine/pack.js';
+import type { GmOnlyModule, NpcNotes, SceneNotes } from '../packs/module.js';
 import { createRng } from '../engine/rng.js';
 import { initialState, type GameState, type Settings } from '../engine/state.js';
 import type { Deps } from './deps.js';
@@ -24,6 +25,8 @@ export interface SessionOptions {
   botUserId: string;
   channelId: string;
   narrator?: Narrator;
+  /** GM-only notes. Held here and read only through gmNotes; never passed to a view, a packet or the narrator. */
+  privateModule?: GmOnlyModule;
   /** Called after each applied command with its new log lines and the new state. */
   onLog?: (lines: LogLine[], state: GameState) => void;
 }
@@ -38,10 +41,12 @@ export interface Session {
   offline(): Promise<void>;
   idle(): Promise<void>;
   state(): GameState | null;
+  /** The private module's notes for the scene in play, for the host only; null with no module. */
+  gmNotes(): { scene: SceneNotes | null; npcs: Record<string, NpcNotes> } | null;
 }
 
 export function createSession(opts: SessionOptions): Session {
-  const { deps, pack, settings, seed, store, send, botUserId, channelId, narrator, onLog } = opts;
+  const { deps, pack, settings, seed, store, send, botUserId, channelId, narrator, onLog, privateModule } = opts;
   let state: GameState | null = null;
   let timer: unknown = null;
   const seen = new Map<string, number>();
@@ -161,6 +166,16 @@ export function createSession(opts: SessionOptions): Session {
     },
 
     state: () => state,
+
+    gmNotes() {
+      if (!privateModule || !state) return null;
+      const npcs: Record<string, NpcNotes> = {};
+      for (const n of state.npcs) {
+        const notes = privateModule.npc(n.id);
+        if (notes) npcs[n.uid] = notes;
+      }
+      return { scene: (state.sceneId && privateModule.scene(state.sceneId)) || null, npcs };
+    },
 
     async idle() {
       await queue.idle();
